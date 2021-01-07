@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "UXjQjm2LayyEUATAtFMU4/caTU1gIASzUoiKmT3yxuWfyJd/GzH150IGxtUwV3cnN5jbXX1rV/T9U4p0DTvO5w==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\soulb\\source\\repos\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\soulb\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

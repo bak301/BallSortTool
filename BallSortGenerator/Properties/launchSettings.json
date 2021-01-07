@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BallSortGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "3"
+    }
+  }
+}
