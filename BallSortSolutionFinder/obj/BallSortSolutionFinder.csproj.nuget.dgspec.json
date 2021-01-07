@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\soulb\\source\\repos\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj": {}
+    "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj": {}
   },
   "projects": {
-    "C:\\Users\\soulb\\source\\repos\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj": {
+    "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\soulb\\source\\repos\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj",
+        "projectUniqueName": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj",
         "projectName": "BallSortGeneratorRandomBall",
-        "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj",
+        "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj",
         "packagesPath": "C:\\Users\\soulb\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\soulb\\source\\repos\\BallSortGeneratorRandomBall\\obj\\",
+        "outputPath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGeneratorRandomBall\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\soulb\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -26,7 +26,6 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
-            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -38,7 +37,6 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "dependencies": {
             "Newtonsoft.Json": {
               "target": "Package",
@@ -60,18 +58,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\soulb\\source\\repos\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj": {
+    "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\soulb\\source\\repos\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj",
+        "projectUniqueName": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj",
         "projectName": "BallSortSolutionFinder",
-        "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj",
+        "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortSolutionFinder\\BallSortSolutionFinder.csproj",
         "packagesPath": "C:\\Users\\soulb\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\soulb\\source\\repos\\BallSortSolutionFinder\\obj\\",
+        "outputPath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortSolutionFinder\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\soulb\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -86,10 +84,9 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
-            "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "C:\\Users\\soulb\\source\\repos\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj": {
-                "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj"
+              "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj": {
+                "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj"
               }
             }
           }
@@ -102,7 +99,6 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "imports": [
             "net461",
             "net462",
@@ -118,7 +114,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

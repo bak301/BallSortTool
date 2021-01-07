@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gLLTrpJJxpa3Z+DC61QN2vwCa/Tkbts59rQpVkDY6iok4NVngIhmqltm1pfjXLcg2cc3o4xRkN3yXrMv7K6BYQ==",
+  "dgSpecHash": "PghifPjlrDGmUJCnr6U9wHpWBcvK8TP1wo6SVuTI3s1/Qvv9F2NWtJckjqSxoK5iTZCvV0ROyxLbUzLhtc/AfQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\soulb\\source\\repos\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj",
+  "projectFilePath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGeneratorRandomBall\\BallSortGeneratorRandomBall.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\soulb\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
   ],

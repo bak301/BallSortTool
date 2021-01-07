@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\soulb\\source\\repos\\BallSortGenerator\\BallSortGenerator.csproj": {}
+    "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGenerator\\BallSortGenerator.csproj": {}
   },
   "projects": {
-    "C:\\Users\\soulb\\source\\repos\\BallSortGenerator\\BallSortGenerator.csproj": {
+    "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGenerator\\BallSortGenerator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\soulb\\source\\repos\\BallSortGenerator\\BallSortGenerator.csproj",
+        "projectUniqueName": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGenerator\\BallSortGenerator.csproj",
         "projectName": "BallSortGenerator",
-        "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortGenerator\\BallSortGenerator.csproj",
+        "projectPath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGenerator\\BallSortGenerator.csproj",
         "packagesPath": "C:\\Users\\soulb\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\soulb\\source\\repos\\BallSortGenerator\\obj\\",
+        "outputPath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGenerator\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\soulb\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -26,7 +26,6 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
-            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -38,7 +37,6 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "imports": [
             "net461",
             "net462",
@@ -54,7 +52,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

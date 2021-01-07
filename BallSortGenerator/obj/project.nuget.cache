@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sQjdTqu5BzlGgjBiz3tWUC/pYvxgL+QjTOF6UBa2TuoieG3BT6eVms6vDWbw3AjUFOjxAGj6JXzGRmrxKjD0QQ==",
+  "dgSpecHash": "TKXPju8/B6N3Rmtr5WtGxDcnPhn4O6U+02zTSJnPoCOA3u93wJThuj+mG2m6QUvBJGz/11zd/u5Hkgy64CkAjw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\soulb\\source\\repos\\BallSortGenerator\\BallSortGenerator.csproj",
+  "projectFilePath": "C:\\Users\\soulb\\source\\repos\\BallSortTool\\BallSortGenerator\\BallSortGenerator.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

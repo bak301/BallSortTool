@@ -22,8 +22,16 @@ namespace BallSortSolutionFinder
 
             bool IsFromStackEmpty = fromStack.Count == 0;
             bool IsToStackFull = toStack.Count == 4;
-            bool IsItemMatched = fromStack.Peek() == toStack.Peek();
-            bool IsToStackEmpty = toStack.Count == 4;
+            bool IsToStackEmpty = toStack.Count == 0;
+            bool IsItemMatched;
+
+            if (!IsFromStackEmpty && !IsToStackEmpty)
+            {
+                IsItemMatched = fromStack.Peek() == toStack.Peek();
+            } else
+            {
+                IsItemMatched = false;
+            }
 
             return IsFromStackEmpty == false
                 && IsToStackFull == false

@@ -12,66 +12,89 @@ namespace BallSortSolutionFinder
         private const int STACK_SIZE = 4;
         public List<Stack<int>> stacks { get; set; }
 
-        private List<Stack<int>> currentGameState;
+        public bool solved { get; set; }
 
-        private bool solved;
-
-        private Queue<Movement> solution;
-        private Queue<List<Stack<int>>> gameStates;
+        private Stack<Movement> solution;
+        private SortedSet<GameState> visited;
+        private Stack<GameState> states;
 
         public Solver()
         {
             stacks = new List<Stack<int>>();
         }
 
-        public Queue<Movement> Solve(Level level)
+        public void Solve(Level level)
         {
             InitVariables(level);
-            solved = false;
-            solution = new Queue<Movement>();
-            while (solved == false)
-            {
-                RecursiveSolution(currentGameState);
-            }
-
-            return null;
+            SolveIteratively();
         }
 
-        private void RecursiveSolution(List<Stack<int>> state)
+        private void SolveIteratively()
         {
-            List<Movement> moves = GetAvailableMovement(state);
-
-            if (moves.Count == 0)
+            states.Push(new GameState(stacks, new Movement(5, 6)));
+            while (solved == false)
             {
-                // no available move
-                gameStates.Dequeue();
-                solution.Dequeue();
+                GameState currentState = states.Pop();
+                List<Movement> moves = GetAvailableMovement(currentState);
+                ShowGame(currentState);
+
+                foreach (var move in moves)
+                {
+                    List<Stack<int>> newStackState = new List<Stack<int>>();
+                    for (int i = 0; i < currentState.stacks.Count; i++)
+                    {
+                        newStackState.Add(new Stack<int>(new Stack<int>(currentState.stacks[i])));
+                    }
+
+                    Move(move, newStackState);
+
+                    if (IsWin(newStackState))
+                    {
+                        solved = true;
+                        return;
+                    }
+
+                    GameState newGameState = new GameState(newStackState, move);
+                    if (!visited.Contains(newGameState))
+                    {
+                        visited.Add(newGameState);
+                        states.Push(newGameState);
+                    }
+                }
             }
+        }
 
-            foreach (var move in moves)
+        private void ShowGame(GameState currentState)
+        {
+            Console.WriteLine($"{currentState.movement.From}->{currentState.movement.To}");
+            List<List<int>> map = new List<List<int>>();
+            currentState.stacks.ForEach(stack =>
             {
-                var tempState = new List<Stack<int>>(state);
-                Move(move, tempState);
+                map.Add(new Stack<int>(stack).ToList());
+            });
 
-                gameStates.Enqueue(tempState);
-                solution.Enqueue(move);
-
-                if (IsWin(tempState))
+            for (int i = STACK_SIZE-1; i >= 0; i--)
+            {
+                for (int j = 0; j < map.Count; j++)
                 {
-                    solved = true;
-                    return;
+                    try
+                    {
+                        Console.Write(map[j][i] + ",");
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.Write("N,");
+                    }
                 }
-                else
-                {
-                    RecursiveSolution(state);
-                }
+                Console.WriteLine();
             }
         }
 
         private void InitVariables(Level level)
         {
-            currentGameState = stacks;
             var sequence = level.Sequence;
+            states = new Stack<GameState>();
+            visited = new SortedSet<GameState>();
 
             for (int i = 0; i < sequence.Length / STACK_SIZE; i++)
             {
@@ -88,17 +111,21 @@ namespace BallSortSolutionFinder
             stacks.Add(new Stack<int>(STACK_SIZE));
         }
 
-        private List<Movement> GetAvailableMovement(List<Stack<int>> gameState)
+        private List<Movement> GetAvailableMovement(GameState state)
         {
+            Movement rewindMove = new Movement(state.movement.To, state.movement.From);
             List<Movement> moves = new List<Movement>();
-            for (int i = 0; i < gameState.Count; i++)
+            for (int i = 0; i < state.stacks.Count; i++)
             {
-                for (int j = 0; j < gameState.Count; j++)
+                for (int j = 0; j < state.stacks.Count; j++)
                 {
-                    if (gameState[i] != gameState[j])
+                    if (state.stacks[i] != state.stacks[j])
                     {
                         Movement move = new Movement(i, j);
-                        if (move.IsValid(gameState)) 
+                        if (move.IsValid(state.stacks)
+                            && move.To != rewindMove.To
+                            && move.From != rewindMove.From) 
+                            
                             moves.Add(move);
                     }
                 }
@@ -109,11 +136,8 @@ namespace BallSortSolutionFinder
 
         private void Move(Movement move, List<Stack<int>> gameState)
         {
-            if (move.IsValid(gameState))
-            {
-                int pickedNumber = currentGameState[move.From].Pop();
-                currentGameState[move.To].Push(pickedNumber);          
-            }
+            int pickedNumber = gameState[move.From].Pop();
+            gameState[move.To].Push(pickedNumber);
         }
 
         private bool IsWin(List<Stack<int>> gameState)
@@ -129,16 +153,12 @@ namespace BallSortSolutionFinder
 
         private bool IsStackCompleted(Stack<int> referenceStack)
         {
-            Stack<int> tempStack = new Stack<int>(referenceStack);
-            if (tempStack.Count == STACK_SIZE)
+            List<int> numbers = referenceStack.ToList();
+            if (numbers.Count == STACK_SIZE)
             {
-                while (tempStack.Count > 0)
+                for (int i = 0; i < STACK_SIZE-1; i++)
                 {
-                    var number = tempStack.Pop();
-                    if (number != tempStack.Peek())
-                    {
-                        return false;
-                    }
+                    if (numbers[i] != numbers[i + 1]) return false;
                 }
 
                 return true; // all elements are equal to eachother
