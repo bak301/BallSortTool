@@ -36,7 +36,8 @@ namespace BallSortSolutionFinder
             {
                 GameState currentState = states.Pop();
                 List<Movement> moves = GetAvailableMovement(currentState);
-                ShowGame(currentState);
+                
+                //ShowGame(currentState); uncomment this too see machine solve the problem
 
                 foreach (var move in moves)
                 {
