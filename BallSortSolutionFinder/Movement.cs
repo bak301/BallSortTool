@@ -9,8 +9,6 @@ namespace BallSortSolutionFinder
         public int From { get; set; }
         public int To { get; set; }
 
-        public bool Winnable { get; set; }
-
         public Movement(int from, int to)
         {
             From = from;

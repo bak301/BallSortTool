@@ -1,5 +1,10 @@
-﻿using System;
+﻿using BallSortGeneratorRandomBall;
+using BallSortSolutionFinder;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace BallSortGenerator
@@ -8,34 +13,64 @@ namespace BallSortGenerator
     // Tuple item1 = column index, item 2 = row index
     class Program
     {
+        private const int STACK_SIZE = 4;
+        private const int LEVEL_COUNT = 30;
         static void Main(string[] args)
         {
-            int colorCount = int.Parse(args[0]);
-            int stackSize = 4;
+            int stackCount = int.Parse(args[0]);
+            string path = args[1];
+            Level[] levels = new Level[LEVEL_COUNT];
 
-            Tuple<int, int>[] level = GenerateLevel(colorCount, stackSize);
+            //TestPerformanceTree(levels, stackCount);
+            //TestPerformanceIterative(levels, stackCount);
 
-            Random rnd = new Random();
-            level = level.OrderBy(x => rnd.Next()).ToArray();
-            
-            foreach (var tuple in level)
+            Export(levels, stackCount, path);
+        }
+
+        private static void Export(Level[] levels, int stackCount, string path)
+        {
+            for (int i = 0; i < LEVEL_COUNT; i++)
             {
-                Console.WriteLine($"{tuple.Item1},{tuple.Item2}");
+                levels[i] = new Level(stackCount, STACK_SIZE);
+                Solver solver = new Solver();
+                solver.SolveLevelWithTree(levels[i]);
+
+                var solution = solver.GetSolutionFormatted();
+
+                WriteToJSON(path + "\\Levels\\level_" + (i + 1) + ".bytes", new LevelJSON(levels[i], solution));
             }
         }
 
-        private static Tuple<int, int>[] GenerateLevel(int colorCount, int stackSize)
+        static void TestPerformanceTree(Level[] levels, int stackCount)
         {
-            Tuple<int, int>[] pool = new Tuple<int, int>[colorCount * stackSize];
-            for (int stackIndex = 0; stackIndex < colorCount;stackIndex++)
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < LEVEL_COUNT; i++)
             {
-                for (int rowIndex = 0; rowIndex < stackSize; rowIndex++)
-                {
-                    pool[stackIndex*stackSize + rowIndex] = new Tuple<int, int>(stackIndex, rowIndex);
-                }
+                levels[i] = new Level(stackCount, STACK_SIZE);
+                Solver solver = new Solver();
+                solver.SolveLevelWithTree(levels[i]);
             }
+            Console.WriteLine(sw.ElapsedMilliseconds);
+            
+        }
 
-            return pool;
+        static void TestPerformanceIterative(Level[] levels, int stackCount)
+        {
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < LEVEL_COUNT; i++)
+            {
+                levels[i] = new Level(stackCount, STACK_SIZE);
+                Solver solver = new Solver();
+                solver.SolveLevelIterative(levels[i]);
+            }
+            Console.WriteLine(sw.ElapsedMilliseconds);
+        }
+
+        private static void WriteToJSON(string filename, Object obj)
+        {
+            StreamWriter file = File.CreateText(filename);
+            file.Write(JsonConvert.SerializeObject(obj, Formatting.None));
+            file.Close();
         }
     }
 }

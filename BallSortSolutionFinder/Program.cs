@@ -2,6 +2,10 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace BallSortSolutionFinder
 {
@@ -9,19 +13,31 @@ namespace BallSortSolutionFinder
     {
         static void Main(string[] args)
         {
-            string levelJSON;
-            using (StreamReader rd = new StreamReader(args[0]))
-            {
-                levelJSON = rd.ReadToEnd();
-            }
-            LevelJSON json = JsonConvert.DeserializeObject<LevelJSON>(levelJSON);
-            Level level = new Level(json.numStacks, json.bubbleTypes);
-            Console.WriteLine(level.StackCount + "\n" + string.Join(",", level.Sequence));
+            string path = args[0];
 
+            
+            Level level;
+            using (StreamReader rd = new StreamReader(path))
+            {
+                string levelText = rd.ReadToEnd();
+                LevelJSON json = JsonConvert.DeserializeObject<LevelJSON>(levelText);
+                level = new Level(json.numStacks - 2, json.bubbleTypes);
+            }
+
+            Console.WriteLine(Solve(level));
+
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    Solve(level);
+            //}
+        }
+
+        static int Solve(Level level)
+        {
+            var sw = Stopwatch.StartNew();
             Solver solver = new Solver();
-            //Console.WriteLine($"{solver.solved} + {string.Join(',', solver.Solve(level))}");
-            solver.Solve(level);
-            Console.WriteLine(solver.solved);
+            solver.SolveLevelWithTree(level);
+            return solver.Solution.Count;
         }
     }
 }
