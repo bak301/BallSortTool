@@ -6,8 +6,9 @@ using System.Linq;
 
 namespace BallSortSolutionFinder
 {
-    public class GameState : IComparable<GameState>
+    public class GameState : IComparable<GameState>, ICloneable
     {
+
         public List<Stack<int>> stacks { get; set; }
         public Movement movement { get; set; }
 
@@ -30,5 +31,25 @@ namespace BallSortSolutionFinder
 
             return IsMovementMatched && IsStacksMatched ? 0 : -1;
         }
+
+        public object Clone()
+        {
+            GameState cloneState = new GameState
+            {
+                movement = new Movement(movement.From, movement.To),
+                stacks = new List<Stack<int>>()
+            };
+
+            for (int i = 0; i < this.stacks.Count; i++)
+            {
+                cloneState.stacks.Add(new Stack<int>(new Stack<int>(this.stacks[i])));
+            }
+
+            return cloneState;
+        }
+
+
+
+        // STATIC CLASS
     }
 }

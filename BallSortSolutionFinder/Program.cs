@@ -19,9 +19,9 @@ namespace BallSortSolutionFinder
             Console.WriteLine(level.StackCount + "\n" + string.Join(",", level.Sequence));
 
             Solver solver = new Solver();
+            //Console.WriteLine($"{solver.solved} + {string.Join(',', solver.Solve(level))}");
             solver.Solve(level);
             Console.WriteLine(solver.solved);
-
         }
     }
 }

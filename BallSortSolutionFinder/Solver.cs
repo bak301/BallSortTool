@@ -17,6 +17,7 @@ namespace BallSortSolutionFinder
         private Stack<Movement> solution;
         private SortedSet<GameState> visited;
         private Stack<GameState> states;
+        private int stackWinCount;
 
         public Solver()
         {
@@ -37,7 +38,7 @@ namespace BallSortSolutionFinder
                 GameState currentState = states.Pop();
                 List<Movement> moves = GetAvailableMovement(currentState);
                 
-                //ShowGame(currentState); uncomment this too see machine solve the problem
+                ShowGame(currentState); //uncomment this too see machine solve the problem
 
                 foreach (var move in moves)
                 {
@@ -49,13 +50,15 @@ namespace BallSortSolutionFinder
 
                     Move(move, newStackState);
 
+                    GameState newGameState = new GameState(newStackState, move);
+
                     if (IsWin(newStackState))
                     {
                         solved = true;
+                        ShowGame(newGameState);
                         return;
                     }
 
-                    GameState newGameState = new GameState(newStackState, move);
                     if (!visited.Contains(newGameState))
                     {
                         visited.Add(newGameState);
@@ -65,7 +68,7 @@ namespace BallSortSolutionFinder
             }
         }
 
-        private void ShowGame(GameState currentState)
+        public void ShowGame(GameState currentState)
         {
             Console.WriteLine($"{currentState.movement.From}->{currentState.movement.To}");
             List<List<int>> map = new List<List<int>>();
@@ -80,11 +83,11 @@ namespace BallSortSolutionFinder
                 {
                     try
                     {
-                        Console.Write(map[j][i] + ",");
+                        Console.Write($"[{map[j][i]}]");
                     }
                     catch (ArgumentOutOfRangeException)
                     {
-                        Console.Write("N,");
+                        Console.Write("[ ]");
                     }
                 }
                 Console.WriteLine();
@@ -108,8 +111,10 @@ namespace BallSortSolutionFinder
                 stacks.Add(stack);
             }
 
+            stackWinCount = stacks.Count;
+
             stacks.Add(new Stack<int>(STACK_SIZE));
-            stacks.Add(new Stack<int>(STACK_SIZE));
+            stacks.Add(new Stack<int>(STACK_SIZE));  
         }
 
         private List<Movement> GetAvailableMovement(GameState state)
@@ -146,13 +151,15 @@ namespace BallSortSolutionFinder
             int counter = 0;
             foreach (var stack in gameState)
             {
-                if (IsStackCompleted(stack)) counter++;
+                if (Solver.IsStackCompleted(stack)) counter++;
             }
 
-            return counter == STACK_SIZE;
+            return counter == stackWinCount;
         }
 
-        private bool IsStackCompleted(Stack<int> referenceStack)
+
+        // Utility
+        public static bool IsStackCompleted(Stack<int> referenceStack)
         {
             List<int> numbers = referenceStack.ToList();
             if (numbers.Count == STACK_SIZE)

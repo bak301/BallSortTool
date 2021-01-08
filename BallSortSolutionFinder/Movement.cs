@@ -9,6 +9,8 @@ namespace BallSortSolutionFinder
         public int From { get; set; }
         public int To { get; set; }
 
+        public bool Winnable { get; set; }
+
         public Movement(int from, int to)
         {
             From = from;
@@ -24,6 +26,7 @@ namespace BallSortSolutionFinder
             bool IsToStackFull = toStack.Count == 4;
             bool IsToStackEmpty = toStack.Count == 0;
             bool IsItemMatched;
+            bool IsFromStackCompleted = Solver.IsStackCompleted(fromStack);
 
             if (!IsFromStackEmpty && !IsToStackEmpty)
             {
@@ -33,9 +36,12 @@ namespace BallSortSolutionFinder
                 IsItemMatched = false;
             }
 
-            return IsFromStackEmpty == false
+            bool result = IsFromStackEmpty == false
+                && IsFromStackCompleted == false
                 && IsToStackFull == false
                 && (IsItemMatched == true || IsToStackEmpty == true);
+
+            return result;
         }
     }
 }
