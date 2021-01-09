@@ -2,7 +2,7 @@
   "profiles": {
     "BallSortGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "6 C:\\Users\\soulb\\Desktop"
+      "commandLineArgs": "5 C:\\Users\\soulb\\Desktop"
     }
   }
 }

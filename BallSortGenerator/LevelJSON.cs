@@ -15,7 +15,7 @@ namespace BallSortGenerator
 
         public LevelJSON(Level level, List<Movement> solution)
         {
-            this.numStack = level.StackCount;
+            this.numStack = level.StackCount + 2;
             this.bubbleTypes = level.Sequence;
             this.step = solution;
         }

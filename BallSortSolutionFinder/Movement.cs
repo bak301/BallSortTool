@@ -26,6 +26,7 @@ namespace BallSortSolutionFinder
             bool IsToStackEmpty = toStack.Count == 0;
             bool IsItemMatched;
             bool IsFromStackCompleted = Solver.IsStackCompleted(fromStack);
+            bool IsMoveFromSingleTypeStackToEmpty = fromStack.IsSingleType() && toStack.Count == 0;
 
             if (!IsFromStackEmpty && !IsToStackEmpty)
             {
@@ -38,6 +39,7 @@ namespace BallSortSolutionFinder
             bool result = IsFromStackEmpty == false
                 && IsFromStackCompleted == false
                 && IsToStackFull == false
+                && IsMoveFromSingleTypeStackToEmpty == false
                 && (IsItemMatched == true || IsToStackEmpty == true);
 
             return result;

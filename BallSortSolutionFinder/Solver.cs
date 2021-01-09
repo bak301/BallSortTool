@@ -174,12 +174,8 @@ namespace BallSortSolutionFinder
                             if (leastMoves > newNode.depth)
                                 leastMoves = newNode.depth;
 
-                            ShowGame(newNode);  
-                            Console.WriteLine(newNode.depth);
-
-                            //currentNode.MarkUnwinnable();
-                            //currentNode = currentNode.Parent;
-                            //break;
+                            //ShowGame(newNode);  
+                            //Console.WriteLine(newNode.depth);
                         }
                     }
                 }
@@ -196,10 +192,11 @@ namespace BallSortSolutionFinder
             }
 
             var newNode = new GameNode(cloneStack, move, node);
-            while (move.IsValid(newNode.Stacks)) // multiple same move
-            {
-                newNode.MakeMove();
-            }
+            //while (move.IsValid(newNode.Stacks)) // multiple same move
+            //{
+            //    newNode.MakeMove();
+            //}
+            newNode.MakeMove();
 
             return newNode;
         }
