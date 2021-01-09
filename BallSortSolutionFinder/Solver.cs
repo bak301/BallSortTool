@@ -104,10 +104,15 @@ namespace BallSortSolutionFinder
             GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount + 1));
             GameNode currentNode = root;
             List<GameNode> winNodes = new List<GameNode>();
+            int leastMoves = Int32.MaxValue;
 
             while (true)
             {
-                if (currentNode.HaveChild())
+                if (currentNode.depth == leastMoves - 1)
+                {
+                    currentNode.MarkUnwinnable();
+
+                } else if (currentNode.HaveChild())
                 {
                     try
                     {
@@ -141,18 +146,7 @@ namespace BallSortSolutionFinder
                     {
                         GameNode newNode = GenerateChildNode(currentNode, move);
 
-                        if (newNode.IsWin(stackWinCount))
-                        {
-                            //Solved = true;
-                            winNodes.Add(newNode);
-
-                            //GetSolution(newNode).ToList().ForEach(mv =>
-                            //{
-                            //    Console.Write($" {mv.From}->{mv.To} ");
-                            //});
-                        }
-
-                        try // Move parent if 
+                        try
                         {
                             var matchedNode = visited.First(node => node.CompareTo(newNode) == 0);
                             if (matchedNode.depth > newNode.depth)
@@ -172,6 +166,20 @@ namespace BallSortSolutionFinder
                         {
                             currentNode.Childs.Add(newNode);
                             visited.Add(newNode);
+                        }
+
+                        if (newNode.IsWin(stackWinCount))
+                        {
+                            winNodes.Add(newNode);
+                            if (leastMoves > newNode.depth)
+                                leastMoves = newNode.depth;
+
+                            ShowGame(newNode);  
+                            Console.WriteLine(newNode.depth);
+
+                            //currentNode.MarkUnwinnable();
+                            //currentNode = currentNode.Parent;
+                            //break;
                         }
                     }
                 }

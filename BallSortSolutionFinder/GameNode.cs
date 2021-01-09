@@ -45,14 +45,6 @@ namespace BallSortSolutionFinder
             //Solver.ShowGame(this);
         }
 
-        public void CheckChild()
-        {
-            if (Childs.Where(node => node.Winnable == true).Count() == 0)
-            {
-                MarkUnwinnable();
-            }
-        }
-
         public bool HaveChild()
         {
             return Childs != null;
