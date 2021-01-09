@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace BallSortSolutionFinder
 {
-    public class Movement
+    public class Movement : IEqualityComparer<Movement>
     {
         public int From { get; set; }
         public int To { get; set; }
@@ -40,6 +41,16 @@ namespace BallSortSolutionFinder
                 && (IsItemMatched == true || IsToStackEmpty == true);
 
             return result;
+        }
+
+        public bool Equals([AllowNull] Movement x, [AllowNull] Movement y)
+        {
+            return x.From == y.From && x.To == y.To;
+        }
+
+        public int GetHashCode([DisallowNull] Movement obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }

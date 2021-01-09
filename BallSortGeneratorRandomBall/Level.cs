@@ -11,6 +11,8 @@ namespace BallSortGeneratorRandomBall
         public int StackCount { get; set; }
         public int[] Sequence { get; set; }
 
+        public bool Solvable { get; set; }
+
         public Level()
         {
 

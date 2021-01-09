@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BallSortSolutionFinder
 {
-    public class GameNode : IComparable<GameNode>, ICloneable
+    public class GameNode : IComparable<GameNode>, ICloneable, IEqualityComparer<GameNode>
     {
 
         public List<Stack<int>> Stacks { get; set; }
@@ -17,6 +17,8 @@ namespace BallSortSolutionFinder
         public List<GameNode> Childs { get; set; }
 
         public bool Winnable { get; private set; }
+
+        public int depth { get; set; }
 
         public GameNode()
         {
@@ -29,6 +31,18 @@ namespace BallSortSolutionFinder
             this.Parent = parent;
             this.Stacks = stacks;
             this.Movement = movement;
+
+            if (parent != null) this.depth = parent.depth + 1;
+        }
+
+        public void MakeMove()
+        {
+            //Console.WriteLine("Stack before");
+            //Solver.ShowGame(this);
+            int pickedNumber = Stacks[Movement.From].Pop();
+            Stacks[Movement.To].Push(pickedNumber);
+            //Console.WriteLine("Stack after");
+            //Solver.ShowGame(this);
         }
 
         public void CheckChild()
@@ -49,20 +63,37 @@ namespace BallSortSolutionFinder
             this.Winnable = false;
         }
 
+        public bool IsWin(int stackWinCount)
+        {
+            int counter = 0;
+            foreach (var stack in Stacks)
+            {
+                if (Solver.IsStackCompleted(stack))
+                    counter++;
+            }
+
+            return counter == stackWinCount;
+        }
+
         public int CompareTo([AllowNull] GameNode other)
         {
+            if (other == null) return -1;
+
+            var stackComparer = new IntStackCompare();
             var copyThis = (GameNode)this.Clone();
             var copyOther = (GameNode)other.Clone();
 
-            var stackComparer = new IntStackCompare();
             copyThis.Stacks.Sort(stackComparer);
             copyOther.Stacks.Sort(stackComparer);
 
-            bool IsMovementMatched = (Movement.From == other.Movement.From && Movement.To == other.Movement.To);
-            bool IsStacksMatched = string.Join(',', copyThis.Stacks.Select(stack => string.Join(',', stack)))
-                                == string.Join(',', copyOther.Stacks.Select(stack => string.Join(',', stack)));
-
-            return IsMovementMatched && IsStacksMatched ? 0 : -1;
+            for (int i = 0; i < copyThis.Stacks.Count; i++)
+            {
+                if (stackComparer.Compare(copyThis.Stacks[i], copyOther.Stacks[i]) != 0)
+                {
+                    return -1;
+                }
+            }
+            return 0;
         }
 
         public object Clone()
@@ -75,10 +106,20 @@ namespace BallSortSolutionFinder
 
             for (int i = 0; i < this.Stacks.Count; i++)
             {
-                cloneState.Stacks.Add(new Stack<int>(new Stack<int>(this.Stacks[i])));
+                cloneState.Stacks.Add(this.Stacks[i].Clone());
             }
 
             return cloneState;
+        }
+
+        public bool Equals([AllowNull] GameNode x, [AllowNull] GameNode y)
+        {
+            return x.CompareTo(y) == 0;
+        }
+
+        public int GetHashCode([DisallowNull] GameNode obj)
+        {
+            throw new NotImplementedException();
         }
 
 

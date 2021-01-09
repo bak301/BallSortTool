@@ -11,6 +11,8 @@ namespace BallSortSolutionFinder
 {
     class Program
     {
+
+        private const int STACK_SIZE = 4;
         static void Main(string[] args)
         {
             string path = args[0];
@@ -37,6 +39,11 @@ namespace BallSortSolutionFinder
             var sw = Stopwatch.StartNew();
             Solver solver = new Solver();
             solver.SolveLevelWithTree(level);
+            Console.WriteLine(sw.ElapsedMilliseconds);
+            solver.GetSolutionFormatted().ForEach(mv =>
+            {
+                Console.Write($" {mv.From}->{mv.To} ");
+            });
             return solver.Solution.Count;
         }
     }

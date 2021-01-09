@@ -14,7 +14,7 @@ namespace BallSortGenerator
     class Program
     {
         private const int STACK_SIZE = 4;
-        private const int LEVEL_COUNT = 30;
+        private const int LEVEL_COUNT = 5;
         static void Main(string[] args)
         {
             int stackCount = int.Parse(args[0]);
@@ -29,15 +29,27 @@ namespace BallSortGenerator
 
         private static void Export(Level[] levels, int stackCount, string path)
         {
-            for (int i = 0; i < LEVEL_COUNT; i++)
+            for (int i = 0; i < LEVEL_COUNT;)
             {
                 levels[i] = new Level(stackCount, STACK_SIZE);
                 Solver solver = new Solver();
+                Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
+
+                var sw = Stopwatch.StartNew();
                 solver.SolveLevelWithTree(levels[i]);
+                Console.WriteLine("Solve time: " + sw.ElapsedMilliseconds);
 
                 var solution = solver.GetSolutionFormatted();
 
-                WriteToJSON(path + "\\Levels\\level_" + (i + 1) + ".bytes", new LevelJSON(levels[i], solution));
+                if (solution.Count() > 0)
+                {
+                    Console.WriteLine("Level Solved !");
+                    WriteToJSON(path + "\\Levels\\level_" + (i + 1) + ".bytes", new LevelJSON(levels[i], solution));
+                    i++;
+                } else
+                {
+                    Console.WriteLine(string.Join(',',levels[i].Sequence) + " is not solvable");
+                }
             }
         }
 

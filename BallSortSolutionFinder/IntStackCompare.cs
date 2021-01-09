@@ -1,30 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
 namespace BallSortSolutionFinder
 {
     class IntStackCompare : IComparer<Stack<int>>
     {
+        public static IntStackCompare instance = new IntStackCompare();
+
         public int Compare([AllowNull] Stack<int> x, [AllowNull] Stack<int> y)
         {
             if (x.Count == y.Count)
             {
-                while (x.Count > 0)
+
+                var xList = x.ToArray();
+                var yList = y.ToArray();
+
+                for (int i = 0; i < xList.Length; i++)
                 {
-                    var xfirst = x.Pop();
-                    var yfirst = y.Pop();
-                    if ( xfirst == yfirst)
+                    if (xList[i] != yList[i])
                     {
-                        continue;
-                    } else
-                    {
-                        return xfirst - yfirst;
+                        return xList[i] - yList[i];
                     }
                 }
                 return 0;
-            } else
+            }
+            else
             {
                 return x.Count - y.Count;
             }
