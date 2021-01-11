@@ -2,7 +2,6 @@
 using BallSortSolutionFinder;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -46,9 +45,10 @@ namespace BallSortGenerator
                     Console.WriteLine("Level Solved !");
                     WriteToJSON(path + "\\Levels\\level_" + (i + 1) + ".bytes", new LevelJSON(levels[i], solution));
                     i++;
-                } else
+                }
+                else
                 {
-                    Console.WriteLine(string.Join(',',levels[i].Sequence) + " is not solvable");
+                    Console.WriteLine(string.Join(',', levels[i].Sequence) + " is not solvable");
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace BallSortGenerator
                 solver.SolveLevelWithTree(levels[i]);
             }
             Console.WriteLine(sw.ElapsedMilliseconds);
-            
+
         }
 
         static void TestPerformanceIterative(Level[] levels, int stackCount)

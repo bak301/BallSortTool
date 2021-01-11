@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BallSortGenerator", "BallSo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BallSortGeneratorRandomBall", "BallSortGeneratorRandomBall\BallSortGeneratorRandomBall.csproj", "{4A31EB22-D046-47E3-9964-46DB85B46A25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallSortSolutionFinder", "BallSortSolutionFinder\BallSortSolutionFinder.csproj", "{735EE85F-85D5-4DCA-A60E-72A83DA2D822}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BallSortSolutionFinder", "BallSortSolutionFinder\BallSortSolutionFinder.csproj", "{735EE85F-85D5-4DCA-A60E-72A83DA2D822}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

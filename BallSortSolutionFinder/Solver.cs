@@ -1,7 +1,6 @@
 ﻿using BallSortGeneratorRandomBall;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace BallSortSolutionFinder
@@ -10,19 +9,22 @@ namespace BallSortSolutionFinder
     {
 
         private const int STACK_SIZE = 4;
-        public List<Stack<int>> Stacks { get; set; }
+        public List<List<int>> Stacks { get; set; }
 
         public bool Solved { get; set; }
 
         public Stack<Movement> Solution { get; private set; }
+        public int TotalPossibleNode { get; private set; }
 
-        private SortedSet<GameNode> visited;
+        public int TotalTraversedNode { get; set; }
+
+        private HashSet<GameNode> visited;
         private Stack<GameNode> states;
         private int stackWinCount;
 
         public Solver()
         {
-            Stacks = new List<Stack<int>>();
+            Stacks = new List<List<int>>();
         }
 
         public void SolveLevelWithTree(Level level)
@@ -32,7 +34,7 @@ namespace BallSortSolutionFinder
             if (winNodes.Count > 0)
             {
                 level.Solvable = true;
-                winNodes.Sort((node1,node2) =>
+                winNodes.Sort((node1, node2) =>
                 {
                     return node1.depth - node2.depth;
                 });
@@ -48,7 +50,7 @@ namespace BallSortSolutionFinder
         public void SolveLevelIterative(Level level)
         {
             InitVariables(level);
-            SolveIteratively();
+            //SolveIteratively();
         }
 
         private Stack<Movement> GetSolution(GameNode winNode)
@@ -67,52 +69,56 @@ namespace BallSortSolutionFinder
             }
         }
 
-        private GameNode SolveIteratively()
-        {
-            GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount+1));
-            states.Push(root);
+        //private GameNode SolveIteratively()
+        //{
+        //    GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount + 1));
+        //    states.Push(root);
 
-            while (Solved == false)
-            {
-                GameNode currentNode = states.Pop();
-                List<Movement> moves = GetValidMoves(currentNode);
+        //    while (Solved == false)
+        //    {
+        //        GameNode currentNode = states.Pop();
+        //        List<Movement> moves = GetValidMoves(currentNode);
 
-                foreach (var move in moves)
-                {
-                    GameNode newNode = GenerateChildNode(currentNode, move);
+        //        foreach (var move in moves)
+        //        {
+        //            GameNode newNode = GenerateChildNode(currentNode, move);
 
-                    if (newNode.IsWin(stackWinCount))
-                    {
-                        //ShowGame(newNode);
-                        Solved = true;
-                        return newNode;
-                    }
+        //            if (newNode.IsWin(stackWinCount))
+        //            {
+        //                //ShowGame(newNode);
+        //                Solved = true;
+        //                return newNode;
+        //            }
 
-                    if (!visited.Contains(newNode))
-                    {
-                        visited.Add(newNode);
-                        states.Push(newNode);
-                    }
-                }
-            }
+        //            if (!visited.Contains(newNode))
+        //            {
+        //                visited.Add(newNode);
+        //                states.Push(newNode);
+        //            }
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         private List<GameNode> SolveWithTree()
         {
             GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount + 1));
             GameNode currentNode = root;
+            TotalPossibleNode = 1;
+            TotalTraversedNode = 0;
             List<GameNode> winNodes = new List<GameNode>();
             int leastMoves = Int32.MaxValue;
 
             while (true)
             {
+                TotalTraversedNode++;
                 if (currentNode.depth == leastMoves - 1)
                 {
                     currentNode.MarkUnwinnable();
 
-                } else if (currentNode.HaveChild())
+                }
+                else if (currentNode.HaveChild())
                 {
                     try
                     {
@@ -121,7 +127,7 @@ namespace BallSortSolutionFinder
                     catch (InvalidOperationException)
                     {
                         currentNode.MarkUnwinnable();
-                        if (currentNode.CompareTo(root) == 0) break;
+                        if (currentNode.Equals(root)) break;
                     }
                 }
 
@@ -131,7 +137,7 @@ namespace BallSortSolutionFinder
                     continue;
                 }
 
-                List<Movement> moves = GetValidMoves(currentNode);
+                List<Movement> moves = currentNode.GetValidMoves();
 
                 if (moves.Count == 0)
                 {
@@ -139,16 +145,17 @@ namespace BallSortSolutionFinder
                 }
                 else
                 {
-                    //ShowGame(currentNode);
-                    currentNode.Childs = new List<GameNode>();
+                    TotalPossibleNode += moves.Count;
+                    ShowGame(currentNode);
+                    currentNode.Childs = new LinkedList<GameNode>();
 
                     foreach (var move in moves)
                     {
                         GameNode newNode = GenerateChildNode(currentNode, move);
-
-                        try
+                        
+                        bool success = visited.TryGetValue(newNode, out GameNode matchedNode);
+                        if (success)
                         {
-                            var matchedNode = visited.First(node => node.CompareTo(newNode) == 0);
                             if (matchedNode.depth > newNode.depth)
                             {
                                 visited.Remove(matchedNode);
@@ -158,13 +165,13 @@ namespace BallSortSolutionFinder
                                     matchedNode.Parent.Childs.Remove(matchedNode);
                                     matchedNode.Parent = null;
                                 }
-                                currentNode.Childs.Add(newNode);
+                                currentNode.Childs.AddLast(newNode);
                                 visited.Add(newNode);
                             }
                         }
-                        catch (InvalidOperationException)
+                        else
                         {
-                            currentNode.Childs.Add(newNode);
+                            currentNode.Childs.AddLast(newNode);
                             visited.Add(newNode);
                         }
 
@@ -185,7 +192,7 @@ namespace BallSortSolutionFinder
         }
         private GameNode GenerateChildNode(GameNode node, Movement move)
         {
-            List<Stack<int>> cloneStack = new List<Stack<int>>();
+            List<List<int>> cloneStack = new List<List<int>>();
             for (int i = 0; i < node.Stacks.Count; i++)
             {
                 cloneStack.Add(node.Stacks[i].Clone());
@@ -204,19 +211,13 @@ namespace BallSortSolutionFinder
         public static void ShowGame(GameNode currentState)
         {
             Console.WriteLine($"{currentState.Movement.From}->{currentState.Movement.To}");
-            List<List<int>> map = new List<List<int>>();
-            currentState.Stacks.ForEach(stack =>
+            for (int i = STACK_SIZE - 1; i >= 0; i--)
             {
-                map.Add(new Stack<int>(stack).ToList());
-            });
-
-            for (int i = STACK_SIZE-1; i >= 0; i--)
-            {
-                for (int j = 0; j < map.Count; j++)
+                for (int j = 0; j < currentState.Stacks.Count; j++)
                 {
                     try
                     {
-                        string number = map[j][i].ToString("00");
+                        string number = currentState.Stacks[j][i].ToString("00");
                         Console.Write($"[{number}]");
                     }
                     catch (ArgumentOutOfRangeException)
@@ -224,8 +225,10 @@ namespace BallSortSolutionFinder
                         Console.Write("[  ]");
                     }
                 }
+                
                 Console.WriteLine();
             }
+            Console.WriteLine(currentState.GetHashCode(currentState));
         }
 
         private void InitVariables(Level level)
@@ -233,14 +236,14 @@ namespace BallSortSolutionFinder
             var sequence = level.Sequence;
             Solution = new Stack<Movement>();
             states = new Stack<GameNode>();
-            visited = new SortedSet<GameNode>();
+            visited = new HashSet<GameNode>(new GameNode());
 
             for (int i = 0; i < sequence.Length / STACK_SIZE; i++)
             {
-                Stack<int> stack = new Stack<int>(STACK_SIZE);
+                List<int> stack = new List<int>(STACK_SIZE);
                 for (int j = 0; j < STACK_SIZE; j++)
                 {
-                    stack.Push(sequence[STACK_SIZE * i + j]);
+                    stack.Add(sequence[STACK_SIZE * i + j]);
                 }
 
                 Stacks.Add(stack);
@@ -248,30 +251,10 @@ namespace BallSortSolutionFinder
 
             stackWinCount = Stacks.Count;
 
-            Stacks.Add(new Stack<int>(STACK_SIZE));
-            Stacks.Add(new Stack<int>(STACK_SIZE));  
+            Stacks.Add(new List<int>(STACK_SIZE));
+            Stacks.Add(new List<int>(STACK_SIZE));
         }
 
-        private List<Movement> GetValidMoves(GameNode state)
-        {
-            Movement rewindMove = new Movement(state.Movement.To, state.Movement.From);
-
-            List<Movement> moves = new List<Movement>();
-            for (int i = 0; i < state.Stacks.Count; i++)
-            {
-                for (int j = 0; j < state.Stacks.Count; j++)
-                {
-                    if (state.Stacks[i] != state.Stacks[j])
-                    {
-                        Movement move = new Movement(i, j);
-                        if (move.IsValid(state.Stacks) && !move.Equals(rewindMove))
-                            moves.Add(move);
-                    }
-                }
-            }
-
-            return moves;
-        }
 
         public List<Movement> GetSolutionFormatted()
         {
@@ -280,18 +263,18 @@ namespace BallSortSolutionFinder
 
 
         // Utility
-        public static bool IsStackCompleted(Stack<int> referenceStack)
+        public static bool IsStackCompleted(List<int> numbers)
         {
-            List<int> numbers = referenceStack.ToList();
             if (numbers.Count == STACK_SIZE)
             {
-                for (int i = 0; i < STACK_SIZE-1; i++)
+                for (int i = 0; i < STACK_SIZE - 1; i++)
                 {
                     if (numbers[i] != numbers[i + 1]) return false;
                 }
 
                 return true; // all elements are equal to eachother
-            } else
+            }
+            else
             {
                 return false;
             }

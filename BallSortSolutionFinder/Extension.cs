@@ -1,28 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace BallSortSolutionFinder
 {
     public static class Extension
     {
-        public static Stack<int> Clone(this Stack<int> stack)
+        public static List<int> Clone(this List<int> list)
         {
-            return new Stack<int>(new Stack<int>(stack));
+            return new List<int>(list);
         }
 
-        public static bool IsSingleType(this Stack<int> stack)
+        public static bool IsSingleType(this List<int> list)
         {
-            if (stack.Count > 0)
+            if (list.Count == 1)
             {
-                var clone = stack.Clone();
-                int reference = clone.Pop();
-                while (clone.Count > 0)
+                return true;
+            }
+            if (list.Count > 1)
+            {
+                int reference = list[0];
+                for (int i = 1; i < list.Count; i++)
                 {
-                    if (clone.Pop() != reference) return false;
+                    if (reference != list[i]) return false;
                 }
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }

@@ -1,8 +1,6 @@
 ﻿using BallSortGeneratorRandomBall;
 using BallSortSolutionFinder;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BallSortGenerator
 {

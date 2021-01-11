@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
+using System.Linq;
 
 namespace BallSortSolutionFinder
 {
@@ -16,10 +16,10 @@ namespace BallSortSolutionFinder
             To = to;
         }
 
-        public bool IsValid(List<Stack<int>> state)
+        public bool IsValid(List<List<int>> currentState)
         {
-            Stack<int> fromStack = state[From];
-            Stack<int> toStack = state[To];
+            List<int> fromStack = currentState[From];
+            List<int> toStack = currentState[To];
 
             bool IsFromStackEmpty = fromStack.Count == 0;
             bool IsToStackFull = toStack.Count == 4;
@@ -30,8 +30,9 @@ namespace BallSortSolutionFinder
 
             if (!IsFromStackEmpty && !IsToStackEmpty)
             {
-                IsItemMatched = fromStack.Peek() == toStack.Peek();
-            } else
+                IsItemMatched = fromStack.Last() == toStack.Last();
+            }
+            else
             {
                 IsItemMatched = false;
             }

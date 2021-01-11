@@ -1,11 +1,8 @@
 ﻿using BallSortGeneratorRandomBall;
 using Newtonsoft.Json;
 using System;
-using System.IO;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace BallSortSolutionFinder
 {
@@ -17,7 +14,7 @@ namespace BallSortSolutionFinder
         {
             string path = args[0];
 
-            
+
             Level level;
             using (StreamReader rd = new StreamReader(path))
             {
@@ -36,6 +33,8 @@ namespace BallSortSolutionFinder
 
         static int Solve(Level level)
         {
+            Console.WriteLine($"Start solve level [{string.Join(',', level.Sequence)}]");
+
             var sw = Stopwatch.StartNew();
             Solver solver = new Solver();
             solver.SolveLevelWithTree(level);

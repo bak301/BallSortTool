@@ -2,7 +2,8 @@
   "profiles": {
     "BallSortSolutionFinder": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\soulb\\Desktop\\Levels\\level_2.bytes\""
+      "commandLineArgs": "\"C:\\Users\\soulb\\Desktop\\Levels\\solver\\level_3.bytes\"",
+      "nativeDebugging": false
     }
   }
 }
