@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BallSortSolutionFinder
@@ -23,6 +24,24 @@ namespace BallSortSolutionFinder
                 }
                 return true;
             } else
+            {
+                return false;
+            }
+        }
+
+        public static bool IsCompleted(this Stack<int> stack, int stack_size)
+        {
+            List<int> numbers = stack.ToList();
+            if (numbers.Count == stack_size)
+            {
+                for (int i = 0; i < stack_size - 1; i++)
+                {
+                    if (numbers[i] != numbers[i + 1]) return false;
+                }
+
+                return true; // all elements are equal to eachother
+            }
+            else
             {
                 return false;
             }

@@ -36,15 +36,19 @@ namespace BallSortSolutionFinder
 
         static int Solve(Level level)
         {
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
             Solver solver = new Solver();
             solver.SolveLevelWithTree(level);
-            Console.WriteLine(sw.ElapsedMilliseconds);
+            
+            Console.Write("Fastest solution: ");
             solver.GetSolutionFormatted().ForEach(mv =>
             {
                 Console.Write($" {mv.From}->{mv.To} ");
             });
-            return solver.Solution.Count;
+            Console.WriteLine();
+            Console.WriteLine($"Total Elapsed Time to traverse all node : {sw.ElapsedMilliseconds}");
+            Console.WriteLine($"Total Node Traversed : {solver.TotalNodeTraversed}");
+            return solver.FastestSolution.Count;
         }
     }
 }

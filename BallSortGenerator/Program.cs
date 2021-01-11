@@ -44,7 +44,7 @@ namespace BallSortGenerator
                 if (solution.Count() > 0)
                 {
                     Console.WriteLine("Level Solved !");
-                    WriteToJSON(path + "\\Levels\\level_" + (i + 1) + ".bytes", new LevelJSON(levels[i], solution));
+                    WriteToJSON(path + "\\level_" + (i + 1) + ".bytes", new LevelJSON(levels[i], solution));
                     i++;
                 } else
                 {

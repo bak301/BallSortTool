@@ -20,17 +20,20 @@ namespace BallSortSolutionFinder
 
         public int depth { get; set; }
 
+        public int StackSize { get; set; }
+
         public GameNode()
         {
 
         }
 
-        public GameNode(List<Stack<int>> stacks, Movement movement, GameNode parent = null)
+        public GameNode(List<Stack<int>> stacks, Movement movement, GameNode parent = null, int stackSize = 4)
         {
             this.Winnable = true;
             this.Parent = parent;
             this.Stacks = stacks;
             this.Movement = movement;
+            this.StackSize = stackSize;
 
             if (parent != null) this.depth = parent.depth + 1;
         }
@@ -39,8 +42,10 @@ namespace BallSortSolutionFinder
         {
             //Console.WriteLine("Stack before");
             //Solver.ShowGame(this);
+
             int pickedNumber = Stacks[Movement.From].Pop();
             Stacks[Movement.To].Push(pickedNumber);
+
             //Console.WriteLine("Stack after");
             //Solver.ShowGame(this);
         }
@@ -60,11 +65,49 @@ namespace BallSortSolutionFinder
             int counter = 0;
             foreach (var stack in Stacks)
             {
-                if (Solver.IsStackCompleted(stack))
+                if (stack.IsCompleted(StackSize))
                     counter++;
             }
 
             return counter == stackWinCount;
+        }
+
+        public List<Movement> GetValidMoves()
+        {
+            List<Movement> moves = new List<Movement>();
+            for (int i = 0; i < Stacks.Count; i++)
+            {
+                for (int j = 0; j < Stacks.Count; j++)
+                {
+                    if (i != j && (i != Movement.To || j != Movement.From))
+                    {
+                        Movement move = new Movement(i, j);
+                        if (move.IsValidAndGood(Stacks))
+                            moves.Add(move);
+                    }
+                }
+            }
+
+            return moves;
+        }
+
+        public GameNode GenerateChildNode(Movement move)
+        {
+            List<Stack<int>> cloneStack = new List<Stack<int>>();
+            for (int i = 0; i < Stacks.Count; i++)
+            {
+                cloneStack.Add(Stacks[i].Clone());
+            }
+
+            var newNode = new GameNode(cloneStack, move, this);
+
+            while (move.IsValidAndGood(newNode.Stacks)) // multiple same move
+            {
+                newNode.MakeMove();
+                move.MoveCount++;
+            }
+
+            return newNode;
         }
 
         public int CompareTo([AllowNull] GameNode other)
