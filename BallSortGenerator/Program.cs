@@ -14,53 +14,138 @@ namespace BallSortGenerator
     class Program
     {
         private const int STACK_SIZE = 4;
-        private const int LEVEL_COUNT = 5;
         static void Main(string[] args)
         {
-            int stackCount = int.Parse(args[0]);
-            string path = args[1];
-            Level[] levels = new Level[LEVEL_COUNT];
+            int stackCount = 4;
+            int levelCount = 1;
+            int levelOffset = 0;
+            float timeLimit = 3;
+            string solutionType = "first";
+            string path = "";
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i])
+                {
+                    case "-numStack":
+                    case "-stackCount":
+                        stackCount = int.Parse(args[i + 1]);
+                        break;
+                    case "-levelCount":
+                        levelCount = int.Parse(args[i + 1]);
+                        break;
+                    case "-levelOffset":
+                        levelOffset = int.Parse(args[i + 1]);
+                        break;
+                    case "-solutionType":
+                        solutionType = args[i + 1];
+                        break;
+                    case "-path":
+                        path = args[i + 1];
+                        break;
+                    case "-time":
+                        timeLimit = float.Parse(args[i + 1]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            Level[] levels = new Level[levelCount];
 
             //TestPerformanceTree(levels, stackCount);
             //TestPerformanceIterative(levels, stackCount);
 
-            Export(levels, stackCount, path);
+            switch (solutionType)
+            {
+                case "shortest":
+                    ExportShortestSolution(levels, levelOffset, timeLimit, stackCount, path);
+                    break;
+                case "first":
+                    ExportFirstSolution(levels, levelOffset, timeLimit, stackCount, path);
+                    break;
+                default:
+                    break;
+            }
+            
+            
         }
 
-        private static void Export(Level[] levels, int stackCount, string path)
+        private static void ExportShortestSolution(Level[] levels, int offset, float timeLimit, int stackCount, string path)
         {
-            for (int i = 0; i < LEVEL_COUNT;)
+            for (int i = 0; i < levels.Length;)
             {
                 levels[i] = new Level(stackCount, STACK_SIZE);
-                Solver solver = new Solver();
+                Solver solver = new Solver(timeLimit);
+                Console.WriteLine("*********************** LEVEL " + (i + 1) + " *************************");
                 Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
 
-                var sw = Stopwatch.StartNew();
-                solver.SolveLevelWithTree(levels[i]);
-                Console.WriteLine("Solve time: " + sw.ElapsedMilliseconds);
+                solver.FindShortestSolution(levels[i]);
+                Console.WriteLine("Solve time: " + solver.TimeFinished);
 
-                var solution = solver.GetSolutionFormatted();
+                var solution = solver.GetSolutionFormatted(solver.FastestSolution);
 
-                if (solution.Count() > 0)
+                if (solution.Count > 0)
                 {
-                    Console.WriteLine("Level Solved !");
-                    WriteToJSON(path + "\\level_" + (i + 1) + ".bytes", new LevelJSON(levels[i], solution));
+                    Console.Write("Fastest solution: " + solution.Count + " moves");
+                    solution.ForEach(mv =>
+                    {
+                        Console.Write($" {mv.From}->{mv.To}({mv.MoveCount}) ");
+                    });
+                    WriteToJSON(path + "\\level_" + (i + 1 + offset) + ".bytes", new LevelJSON(levels[i], solution));
                     i++;
-                } else
-                {
-                    Console.WriteLine(string.Join(',',levels[i].Sequence) + " is not solvable");
                 }
+                else
+                {
+                    Console.WriteLine("Level not solvable ...");
+                }
+
+                Console.WriteLine();
+                Console.WriteLine($"Total Node Traversed : {solver.TotalNodeTraversed}");
+                Console.WriteLine("*******************************************************\n");
+            }
+        }
+
+        private static void ExportFirstSolution(Level[] levels, int offset, float timeLimit, int stackCount, string path)
+        {
+            for (int i = 0; i < levels.Length;)
+            {
+                levels[i] = new Level(stackCount, STACK_SIZE);
+                Solver solver = new Solver(timeLimit);
+                Console.WriteLine("*********************** LEVEL " + (i + 1) + " *************************");
+                Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
+
+                solver.FindFirstSolution(levels[i]);
+                Console.WriteLine("Solve time: " + solver.TimeFinished);
+
+                var solution = solver.GetSolutionFormatted(solver.FirstSolution);
+
+                if (solution.Count > 0)
+                {
+                    Console.Write("First solution: " + solution.Count + " moves");
+                    solution.ForEach(mv =>
+                    {
+                        Console.Write($" {mv.From}->{mv.To}({mv.MoveCount}) ");
+                    });
+                    WriteToJSON(path + "\\level_" + (i + 1 + offset) + ".bytes", new LevelJSON(levels[i], solution));
+                    i++;
+                }
+                else
+                {
+                    Console.WriteLine("Level not solvable ...");
+                }
+                Console.WriteLine();
+                Console.WriteLine("Total node traversed: " + solver.TotalNodeTraversed);
             }
         }
 
         static void TestPerformanceTree(Level[] levels, int stackCount)
         {
             var sw = Stopwatch.StartNew();
-            for (int i = 0; i < LEVEL_COUNT; i++)
+            for (int i = 0; i < levels.Length; i++)
             {
                 levels[i] = new Level(stackCount, STACK_SIZE);
                 Solver solver = new Solver();
-                solver.SolveLevelWithTree(levels[i]);
+                solver.FindShortestSolution(levels[i]);
             }
             Console.WriteLine(sw.ElapsedMilliseconds);
             
@@ -69,7 +154,7 @@ namespace BallSortGenerator
         static void TestPerformanceIterative(Level[] levels, int stackCount)
         {
             var sw = Stopwatch.StartNew();
-            for (int i = 0; i < LEVEL_COUNT; i++)
+            for (int i = 0; i < levels.Length; i++)
             {
                 levels[i] = new Level(stackCount, STACK_SIZE);
                 Solver solver = new Solver();

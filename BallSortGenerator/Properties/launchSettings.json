@@ -2,7 +2,7 @@
   "profiles": {
     "BallSortGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "4 C:\\Users\\soulb\\Desktop"
+      "commandLineArgs": "-levelCount 5 -levelOffset 5 -stackCount 10 -timeLimit 1 -solutionType first -path C:\\Users\\soulb\\OneDrive\\Desktop\\levels\\10"
     }
   }
 }

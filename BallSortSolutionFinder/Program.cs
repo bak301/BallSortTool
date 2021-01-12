@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace BallSortSolutionFinder
 {
-    class Program
+    public class Program
     {
 
         private const int STACK_SIZE = 4;
@@ -34,17 +34,24 @@ namespace BallSortSolutionFinder
             //}
         }
 
-        static int Solve(Level level)
+        public static int Solve(Level level)
         {
             Stopwatch sw = Stopwatch.StartNew();
             Solver solver = new Solver();
-            solver.SolveLevelWithTree(level);
+            solver.FindShortestSolution(level);
             
-            Console.Write("Fastest solution: ");
-            solver.GetSolutionFormatted().ForEach(mv =>
+            if (solver.FastestSolution.Count > 0)
             {
-                Console.Write($" {mv.From}->{mv.To} ");
-            });
+                Console.Write("Fastest solution: ");
+                solver.GetSolutionFormatted(solver.FastestSolution).ForEach(mv =>
+                {
+                    Console.Write($" {mv.From}->{mv.To} ");
+                });
+            } else
+            {
+                Console.WriteLine("Level not solvable ...");
+            }
+            
             Console.WriteLine();
             Console.WriteLine($"Total Elapsed Time to traverse all node : {sw.ElapsedMilliseconds}");
             Console.WriteLine($"Total Node Traversed : {solver.TotalNodeTraversed}");

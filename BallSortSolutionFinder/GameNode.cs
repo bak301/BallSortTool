@@ -160,5 +160,41 @@ namespace BallSortSolutionFinder
 
 
         // STATIC CLASS
+
+        //unknown magic
+        public int GetScore()
+        {
+            int score = 0;
+            Stack<int> temp;
+            int nextItem, lastItem;
+            int cnt = 1;
+            for (int i = 0; i < Stacks.Count; i++)
+            {
+                if (Stacks[i].Count == 0)
+                {
+                    score += 10;
+                }
+                else
+                {
+                    temp = Stacks[i].Clone();
+                    lastItem = temp.Pop();
+                    while (temp.Count > 0)
+                    {
+                        nextItem = temp.Pop();
+                        if (lastItem == nextItem)
+                        {
+                            cnt++;
+                        }
+                        else
+                        {
+                            lastItem = nextItem;
+                            cnt = 1;
+                        }
+                    }
+                    score += 5 * cnt;
+                }
+            }
+            return score;
+        }
     }
 }
