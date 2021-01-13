@@ -161,21 +161,25 @@ namespace BallSortSolutionFinder
 
         // STATIC CLASS
 
-        //unknown magic
+        // Calculate score
         public int GetScore()
         {
-            int score = 0;
+            double score = 0;
             Stack<int> temp;
             int nextItem, lastItem;
-            int cnt = 1;
+            
             for (int i = 0; i < Stacks.Count; i++)
             {
                 if (Stacks[i].Count == 0)
                 {
-                    score += 10;
+                    score += 40;
+                } else if (Stacks[i].IsCompleted(StackSize))
+                {
+                    score += 100;
                 }
                 else
                 {
+                    double count = 1;
                     temp = Stacks[i].Clone();
                     lastItem = temp.Pop();
                     while (temp.Count > 0)
@@ -183,18 +187,19 @@ namespace BallSortSolutionFinder
                         nextItem = temp.Pop();
                         if (lastItem == nextItem)
                         {
-                            cnt++;
+                            count++;
                         }
                         else
                         {
+                            score += Math.Pow(3, count);
                             lastItem = nextItem;
-                            cnt = 1;
+                            count = 1;
                         }
                     }
-                    score += 5 * cnt;
+                    //score += Math.Pow(3, count);
                 }
             }
-            return score;
+            return (int)score - Movement.MoveCount;
         }
     }
 }

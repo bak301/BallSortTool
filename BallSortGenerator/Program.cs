@@ -34,10 +34,10 @@ namespace BallSortGenerator
                     case "-levelCount":
                         levelCount = int.Parse(args[i + 1]);
                         break;
-                    case "-levelOffset":
+                    case "-offset":
                         levelOffset = int.Parse(args[i + 1]);
                         break;
-                    case "-solutionType":
+                    case "-type":
                         solutionType = args[i + 1];
                         break;
                     case "-path":
@@ -46,6 +46,9 @@ namespace BallSortGenerator
                     case "-time":
                         timeLimit = float.Parse(args[i + 1]);
                         break;
+                    case "/help":
+                        ShowReadMe();
+                        return;
                     default:
                         break;
                 }
@@ -68,6 +71,18 @@ namespace BallSortGenerator
             }
             
             
+        }
+
+        private static void ShowReadMe()
+        {
+            string[] lines = File.ReadAllLines(@".\README.MD");
+
+            // Display the file contents by using a foreach loop.
+            foreach (string line in lines)
+            {
+                // Use a tab to indent each line of the file.
+                Console.WriteLine("\t" + line);
+            }
         }
 
         private static void ExportShortestSolution(Level[] levels, int offset, float timeLimit, int stackCount, string path)

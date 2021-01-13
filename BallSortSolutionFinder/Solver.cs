@@ -201,7 +201,14 @@ namespace BallSortSolutionFinder
                         }
                     }
 
-                    currentNode.Childs = currentNode.Childs.OrderBy(node => node.GetScore()).ToList();
+                    currentNode.Childs = currentNode.Childs.OrderByDescending(node => node.GetScore()).ToList();
+#if DEBUG
+                    foreach (var node in currentNode.Childs)
+                    {
+                        ShowGame(node);
+                        Console.WriteLine("Score :" + node.GetScore());
+                    }
+#endif
                 }
             }
             TimeFinished = sw.ElapsedMilliseconds / 1000f;
