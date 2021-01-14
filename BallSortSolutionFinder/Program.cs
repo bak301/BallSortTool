@@ -12,12 +12,30 @@ namespace BallSortSolutionFinder
     public class Program
     {
 
-        private const int STACK_SIZE = 4;
         static void Main(string[] args)
         {
-            string path = args[0];
+            string path = @".\";
+            string type = "shortest";
+            bool IsExport = false;
 
-            
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i])
+                {
+                    case "-path":
+                        path = args[i + 1];
+                        break;
+                    case "-type":
+                        type = args[i + 1];
+                        break;
+                    case "-export":
+                        IsExport = bool.Parse(args[i + 1]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             Level level;
             using (StreamReader rd = new StreamReader(path))
             {
@@ -26,36 +44,48 @@ namespace BallSortSolutionFinder
                 level = new Level(json.numStacks - 2, json.bubbleTypes);
             }
 
-            Console.WriteLine(Solve(level));
-
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    Solve(level);
-            //}
+            Console.WriteLine("Move count: " + Solve(level, type, IsExport));
         }
 
-        public static int Solve(Level level)
+        public static int Solve(Level level, string type, bool IsExport)
         {
+            Console.WriteLine();
             Stopwatch sw = Stopwatch.StartNew();
             Solver solver = new Solver();
-            solver.FindShortestSolution(level);
-            
-            if (solver.FastestSolution.Count > 0)
+
+            Stack<Movement> outputSolution;
+
+            if (type == "first")
             {
-                Console.Write("Fastest solution: ");
-                solver.GetSolutionFormatted(solver.FastestSolution).ForEach(mv =>
+                solver.FindFirstSolution(level);
+                outputSolution = solver.FirstSolution;
+            } else
+            {
+                solver.FindShortestSolution(level);
+                outputSolution = solver.FastestSolution;
+                Console.WriteLine($"Total Elapsed Time to traverse all node : {sw.ElapsedMilliseconds}");
+            }
+
+            if (outputSolution.Count > 0)
+            {
+                Console.Write(type.ToUpper() + " Solution: ");
+                solver.GetSolutionFormatted(outputSolution).ForEach(mv =>
                 {
                     Console.Write($" {mv.From}->{mv.To} ");
                 });
-            } else
+            }
+            else
             {
                 Console.WriteLine("Level not solvable ...");
             }
-            
-            Console.WriteLine();
-            Console.WriteLine($"Total Elapsed Time to traverse all node : {sw.ElapsedMilliseconds}");
+
+            if (IsExport)
+            {
+                // export here
+            }
+
             Console.WriteLine($"Total Node Traversed : {solver.TotalNodeTraversed}");
-            return solver.FastestSolution.Count;
+            return outputSolution.Sum(mv => mv.MoveCount);
         }
     }
 }

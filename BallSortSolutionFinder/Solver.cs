@@ -46,7 +46,7 @@ namespace BallSortSolutionFinder
                 level.Solvable = true;
                 winNodes.Sort((node1,node2) =>
                 {
-                    return node1.depth - node2.depth;
+                    return GetSolution(node1).Sum(GetMoveCount) - GetSolution(node2).Sum(GetMoveCount);
                 });
                 FastestSolution = GetSolution(winNodes[0]);
             }
@@ -305,6 +305,11 @@ namespace BallSortSolutionFinder
         public List<Movement> GetSolutionFormatted(Stack<Movement> solution)
         {
             return solution.ToList();
+        }
+
+        private int GetMoveCount(Movement move)
+        {
+            return move.MoveCount;
         }
     }
 }
