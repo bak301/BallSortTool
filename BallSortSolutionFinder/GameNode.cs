@@ -18,7 +18,9 @@ namespace BallSortSolutionFinder
 
         public bool Winnable { get; private set; }
 
-        public int depth { get; set; }
+        public int Depth { get; set; }
+
+        public int MoveCount { get; set; }
 
         public int StackSize { get; set; }
 
@@ -35,7 +37,15 @@ namespace BallSortSolutionFinder
             this.Movement = movement;
             this.StackSize = stackSize;
 
-            if (parent != null) this.depth = parent.depth + 1;
+            if (parent != null)
+            {
+                this.Depth = parent.Depth + 1;
+                this.MoveCount = parent.MoveCount;
+            } else
+            {
+                this.Depth = 1;
+                this.MoveCount = 0;
+            }
         }
 
         public void MakeMove()
@@ -105,6 +115,7 @@ namespace BallSortSolutionFinder
             {
                 newNode.MakeMove();
                 move.MoveCount++;
+                newNode.MoveCount++;
             }
 
             return newNode;
@@ -135,7 +146,6 @@ namespace BallSortSolutionFinder
         {
             GameNode cloneState = new GameNode
             {
-                Movement = new Movement(Movement.From, Movement.To),
                 Stacks = new List<Stack<int>>()
             };
 

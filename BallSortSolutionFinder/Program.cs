@@ -50,41 +50,47 @@ namespace BallSortSolutionFinder
         public static int Solve(Level level, string type, bool IsExport)
         {
             Console.WriteLine();
-            Stopwatch sw = Stopwatch.StartNew();
             Solver solver = new Solver();
 
             Stack<Movement> outputSolution;
 
-            if (type == "first")
+            switch (type)
             {
-                solver.FindFirstSolution(level);
-                outputSolution = solver.FirstSolution;
-            } else
-            {
-                solver.FindShortestSolution(level);
-                outputSolution = solver.FastestSolution;
-                Console.WriteLine($"Total Elapsed Time to traverse all node : {sw.ElapsedMilliseconds}");
+                case "first":
+                    solver.FindFirstSolution(level);
+                    outputSolution = solver.FirstSolution;
+                    break;
+                case "shortestDFS":
+                    solver.FindShortestSolutionDFS(level);
+                    outputSolution = solver.ShortestSolution;
+                    break;
+                case "shortestBFS":
+                    solver.FindShortestSolution(level);
+                    outputSolution = solver.ShortestSolution;
+                    break;
+                default:
+                    throw new InvalidOperationException("No type of solver are chosen !");
             }
 
             if (outputSolution.Count > 0)
             {
-                Console.Write(type.ToUpper() + " Solution: ");
+                Console.Write(type.ToUpperInvariant() + " Solution: ");
                 solver.GetSolutionFormatted(outputSolution).ForEach(mv =>
                 {
-                    Console.Write($" {mv.From}->{mv.To} ");
+                    Console.Write($" {mv.From}->{mv.To}({mv.MoveCount}) ");
                 });
             }
             else
             {
                 Console.WriteLine("Level not solvable ...");
             }
+            Console.WriteLine($"Time spent : {solver.TimeFinished} seconds");
+            Console.WriteLine($"Total Node Traversed: {solver.TotalNodeTraversed}");
 
             if (IsExport)
             {
                 // export here
             }
-
-            Console.WriteLine($"Total Node Traversed : {solver.TotalNodeTraversed}");
             return outputSolution.Sum(mv => mv.MoveCount);
         }
     }

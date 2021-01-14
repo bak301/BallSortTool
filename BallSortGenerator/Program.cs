@@ -94,10 +94,10 @@ namespace BallSortGenerator
                 Console.WriteLine("*********************** LEVEL " + (i + 1) + " *************************");
                 Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
 
-                solver.FindShortestSolution(levels[i]);
+                solver.FindShortestSolutionDFS(levels[i]);
                 Console.WriteLine("Solve time: " + solver.TimeFinished);
 
-                var solution = solver.GetSolutionFormatted(solver.FastestSolution);
+                var solution = solver.GetSolutionFormatted(solver.ShortestSolution);
 
                 if (solution.Count > 0)
                 {
@@ -160,7 +160,7 @@ namespace BallSortGenerator
             {
                 levels[i] = new Level(stackCount, STACK_SIZE);
                 Solver solver = new Solver();
-                solver.FindShortestSolution(levels[i]);
+                solver.FindShortestSolutionDFS(levels[i]);
             }
             Console.WriteLine(sw.ElapsedMilliseconds);
             
@@ -168,14 +168,13 @@ namespace BallSortGenerator
 
         static void TestPerformanceIterative(Level[] levels, int stackCount)
         {
-            var sw = Stopwatch.StartNew();
             for (int i = 0; i < levels.Length; i++)
             {
                 levels[i] = new Level(stackCount, STACK_SIZE);
                 Solver solver = new Solver();
-                solver.SolveLevelIterative(levels[i]);
+                solver.FindShortestSolution(levels[i]);
+                Console.WriteLine("Time spent : " + solver.TimeFinished / 1000f + " seconds");
             }
-            Console.WriteLine(sw.ElapsedMilliseconds);
         }
 
         private static void WriteToJSON(string filename, Object obj)
