@@ -172,7 +172,7 @@ namespace BallSortSolutionFinder
         // STATIC CLASS
 
         // Calculate score
-        public int GetScore()
+        public int GetScoreWithNoMoveCountPenalty()
         {
             double score = 0;
             Stack<int> temp;
@@ -209,7 +209,52 @@ namespace BallSortSolutionFinder
                     //score += Math.Pow(3, count);
                 }
             }
-            return (int)score - Movement.MoveCount;
+            return (int)score;
+        }
+
+        public int GetScoreWithBigMoveCountPenalty()
+        {
+            return GetScoreWithNoMoveCountPenalty() - Movement.MoveCount * 1000;
+        }
+        /// <summary>
+        /// This Method came from Antoun Wardy https://github.com/AntounWagdy/Ball-Sort-Puzzle-Solver/blob/master/Ball-Sort-Puzzle-Solver/Game.cpp
+        /// </summary>
+        /// <returns>int</returns>
+        public int GetScoreOriginal()
+        {
+            double score = 0;
+            Stack<int> temp;
+            int nextItem, lastItem;
+
+            for (int i = 0; i < Stacks.Count; i++)
+            {
+                if (Stacks[i].Count == 0)
+                {
+                    score += 10;
+                }
+                else
+                {
+                    double count = 1;
+                    temp = Stacks[i].Clone();
+                    lastItem = temp.Pop();
+                    while (temp.Count > 0)
+                    {
+                        nextItem = temp.Pop();
+                        if (lastItem == nextItem)
+                        {
+                            count++;
+                        }
+                        else
+                        {
+                            lastItem = nextItem;
+                            count = 1;
+                        }
+                    }
+                    score += 5; 
+                    //score += Math.Pow(3, count);
+                }
+            }
+            return (int)score;
         }
     }
 }

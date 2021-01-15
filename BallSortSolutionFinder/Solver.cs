@@ -69,10 +69,19 @@ namespace BallSortSolutionFinder
         public void FindShortestSolution(Level level)
         {
             InitVariables(level);
-            var winNode = SolveWithBFS();
-            if (Solved)
+            var winNodes = SolveWithBFS();
+            if (winNodes.Count > 0)
             {
-                ShortestSolution = GetSolution(winNode);
+                level.Solvable = true;
+                winNodes.Sort((node1, node2) =>
+                {
+                    return GetSolution(node1).Sum(GetMoveCount) - GetSolution(node2).Sum(GetMoveCount);
+                });
+                ShortestSolution = GetSolution(winNodes[0]);
+            }
+            else
+            {
+                level.Solvable = false;
             }
         }
 
@@ -92,42 +101,76 @@ namespace BallSortSolutionFinder
             }
         }
 
-        private GameNode SolveWithBFS()
+        private List<GameNode> SolveWithBFS()
         {
+            List<GameNode> winNodes = new List<GameNode>();
             GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount+1));
             stateQueue.Enqueue(root);
             IEqualityComparer<GameNode> nodeComparer = root;
-
+            int leastMoves = Int32.MaxValue;
             var sw = Stopwatch.StartNew();
-            while (Solved == false)
+
+            while (true)
             {
                 TotalNodeTraversed++;
-                GameNode currentNode = stateQueue.Dequeue();
-                List<Movement> moves = currentNode.GetValidMoves();
-                var childs = moves.Select(move => currentNode.GenerateChildNode(move))
-                    .OrderByDescending(node => node.GetScore());
-
-                foreach (var childNode in childs)
+                GameNode currentNode;
+                try
                 {
-#if DEBUG
-                    ShowGame(childNode);
-#endif
-                    if (childNode.IsWin(stackWinCount))
-                    {
-                        Solved = true;
-                        TimeFinished = sw.ElapsedMilliseconds;
-                        return childNode;
-                    }
+                    currentNode = stateQueue.Dequeue();
+                }
+                catch (InvalidOperationException)
+                {
+                    break; // no more valid state;
+                }
 
-                    if (!visited.Contains(childNode, nodeComparer))
+                List<Movement> moves = currentNode.GetValidMoves();
+                
+                if (moves.Count > 0)
+                {
+                    currentNode.Childs = new List<GameNode>();
+                    foreach (var move in moves)
                     {
-                        visited.Add(childNode);
-                        stateQueue.Enqueue(childNode);
+                        GameNode newNode = currentNode.GenerateChildNode(move);
+                        if (newNode.IsWin(stackWinCount))
+                        {
+                            if (leastMoves > newNode.MoveCount)
+                                leastMoves = newNode.MoveCount;
+
+                            winNodes.Add(newNode);
+                        }
+                        else if (newNode.MoveCount < leastMoves - 1)
+                        {
+                            try
+                            {
+                                var matchedNode = visited.First(node => node.CompareTo(newNode) == 0);
+                                if (matchedNode.MoveCount > newNode.MoveCount)
+                                {
+                                    visited.Remove(matchedNode);
+
+                                    if (matchedNode.Parent != null)
+                                    {
+                                        matchedNode.Parent.Childs.Remove(matchedNode);
+                                    }
+                                    currentNode.Childs.Add(newNode);
+                                    visited.Add(newNode);
+                                }
+                            }
+                            catch (InvalidOperationException) // can't found new node in Visited
+                            {
+                                currentNode.Childs.Add(newNode);
+                                visited.Add(newNode);
+                            }
+                        }
+                    }
+                    var orderedNodes = currentNode.Childs.OrderByDescending(node => node.GetScoreWithNoMoveCountPenalty());
+                    foreach (var node in orderedNodes)
+                    {
+                        stateQueue.Enqueue(node);
                     }
                 }
             }
-
-            return null;
+            TimeFinished = sw.ElapsedMilliseconds / 1000f;
+            return winNodes;
         }
 
         private List<GameNode> SolveWithDFS(Action<List<GameNode>, GameNode> OnWinNodeFound)
@@ -141,12 +184,7 @@ namespace BallSortSolutionFinder
             while (true && Solved == false && (sw.ElapsedMilliseconds / 1000f < TimeLimit))
             {
                 TotalNodeTraversed++;
-                if (currentNode.MoveCount >= leastMoves - 1)
-                {
-                    currentNode.MarkUnwinnable();
-
-                }
-                else if (currentNode.HaveChild())
+                if (currentNode.HaveChild())
                 {
                     try
                     {
@@ -159,29 +197,34 @@ namespace BallSortSolutionFinder
                     }
                 }
 
-                if (currentNode.Winnable == false)
-                {
-                    currentNode = currentNode.Parent;
-                    continue;
-                }
-
                 var moves = currentNode.GetValidMoves();
 
                 if (moves.Count == 0)
                 {
                     currentNode.MarkUnwinnable();
                 }
-                else
+
+                if (currentNode.Winnable == false)
                 {
+                    currentNode = currentNode.Parent;
+                    continue;
+                }
 #if DEBUG
                     //ShowGame(currentNode);
 #endif
-                    currentNode.Childs = new List<GameNode>();
+                currentNode.Childs = new List<GameNode>();
 
-                    foreach (var move in moves)
+                foreach (var move in moves)
+                {
+                    GameNode newNode = currentNode.GenerateChildNode(move);
+                    if (newNode.IsWin(stackWinCount))
                     {
-                        GameNode newNode = currentNode.GenerateChildNode(move);
+                        if (leastMoves > newNode.MoveCount)
+                            leastMoves = newNode.MoveCount;
 
+                        OnWinNodeFound.Invoke(winNodes, newNode);
+                    } else if (newNode.MoveCount < leastMoves - 1)
+                    {
                         try
                         {
                             var matchedNode = visited.First(node => node.CompareTo(newNode) == 0);
@@ -203,25 +246,9 @@ namespace BallSortSolutionFinder
                             currentNode.Childs.Add(newNode);
                             visited.Add(newNode);
                         }
-
-                        if (newNode.IsWin(stackWinCount))
-                        {
-                            if (leastMoves > newNode.MoveCount)
-                                leastMoves = newNode.MoveCount;
-
-                            OnWinNodeFound.Invoke(winNodes, newNode);
-                        }
                     }
-
-                    currentNode.Childs = currentNode.Childs.OrderByDescending(node => node.GetScore()).ToList();
-#if DEBUG
-                    //foreach (var node in currentNode.Childs)
-                    //{
-                    //    ShowGame(node);
-                    //    Console.WriteLine("Score :" + node.GetScore());
-                    //}
-#endif
                 }
+                currentNode.Childs = currentNode.Childs.OrderByDescending(node => node.GetScoreWithNoMoveCountPenalty()).ToList();
             }
             TimeFinished = sw.ElapsedMilliseconds / 1000f;
             return winNodes;
