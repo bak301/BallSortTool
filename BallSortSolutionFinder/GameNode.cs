@@ -72,7 +72,7 @@ namespace BallSortSolutionFinder
                     index /= (int)Math.Pow(10, offset);
                 } else
                 {
-                    index = -999999 - i;
+                    index = -99999 - i;
                 }
 
                 bool succeed = sorted.TryAdd(index, Stacks[i]);
