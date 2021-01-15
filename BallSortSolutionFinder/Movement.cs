@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
 namespace BallSortSolutionFinder
@@ -25,17 +26,19 @@ namespace BallSortSolutionFinder
             Score = 0;
         }
 
-        public bool IsValidAndGood(List<Stack<int>> state)
+        public bool IsValidAndGood(List<int?[]> state)
         {
-            Stack<int> fromStack = state[From];
-            Stack<int> toStack = state[To];
+            int?[] fromStack = state[From];
+            int?[] toStack = state[To];
+
+            int fromStackCount = fromStack.CountStack();
+            int toStackCount = toStack.CountStack();
 
             // Valid check
-            bool IsFromStackEmpty = fromStack.Count == 0;
-            bool IsToStackFull = toStack.Count == 4;
-            bool IsToStackEmpty = toStack.Count == 0;
+            bool IsFromStackEmpty = fromStackCount == 0;
+            bool IsToStackFull = toStackCount == 4;
+            bool IsToStackEmpty = toStackCount == 0;
             bool IsItemMatched;
-            bool IsFromStackCompleted = fromStack.IsCompleted(StackSize);
 
             if (!IsFromStackEmpty && !IsToStackEmpty)
             {
@@ -46,17 +49,16 @@ namespace BallSortSolutionFinder
             }
 
             // Valid but bad move
-            bool IsMoveFromSingleTypeStackToEmpty = fromStack.IsSingleType() && toStack.Count == 0;
+            bool IsMoveFromSingleTypeStackToEmpty = fromStack.IsSingleType() && toStackCount == 0;
             bool IsMoveFromSingleTypeStackToAnother = IsItemMatched  
                                                    && fromStack.IsSingleType() 
                                                    && toStack.IsSingleType() 
-                                                   && fromStack.Count > toStack.Count;
+                                                   && fromStackCount > toStackCount;
             bool IsBadMove = IsItemMatched
-                          && toStack.Count > 0
+                          && toStackCount > 0
                           && IsMoveFromBiggerStackToLesser(fromStack, toStack);
 
             bool result = IsFromStackEmpty == false
-                && IsFromStackCompleted == false
                 && IsToStackFull == false
                 && IsMoveFromSingleTypeStackToEmpty == false
                 && IsMoveFromSingleTypeStackToAnother == false
@@ -66,14 +68,15 @@ namespace BallSortSolutionFinder
             return result;
         }
 
-        private bool IsMoveFromBiggerStackToLesser(Stack<int> from, Stack<int> to)
+        private bool IsMoveFromBiggerStackToLesser(int?[] from, int?[] to)
         {
-            var cloneFrom = from.Clone();
-            var spareSpace = StackSize - to.Count;
+            var spareSpace = StackSize - to.CountStack();
             var sameTypeCount = 0;
-            while (cloneFrom.Count > 0)
+            int? toTopValue = to.Peek();
+
+            for (int i = 0; i < from.CountStack(); i++)
             {
-                if (cloneFrom.Pop() == to.Peek())
+                if (from[i] == toTopValue)
                 {
                     sameTypeCount++;
                 } else

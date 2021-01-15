@@ -2,7 +2,7 @@
   "profiles": {
     "BallSortSolutionFinder": {
       "commandName": "Project",
-      "commandLineArgs": "-path \"C:\\Users\\soulb\\Desktop\\levels\\6\\level_1.bytes\" -type shortestBFS -export false"
+      "commandLineArgs": "-path \"C:\\Users\\soulb\\Desktop\\levels\\4\\level_1.bytes\" -type shortestDFS -export false"
     }
   }
 }

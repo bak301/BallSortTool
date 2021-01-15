@@ -6,10 +6,12 @@ using System.Linq;
 
 namespace BallSortSolutionFinder
 {
-    public class GameNode : IComparable<GameNode>, ICloneable, IEqualityComparer<GameNode>
+    public class GameNode : IComparable<GameNode>, IEqualityComparer<GameNode>
     {
 
-        public List<Stack<int>> Stacks { get; set; }
+        public List<int?[]> Stacks { get; set; }
+
+        public SortedList<int, int?[]> SortedStacks;
         public Movement Movement { get; set; }
 
         public GameNode Parent { get; set; }
@@ -29,7 +31,7 @@ namespace BallSortSolutionFinder
 
         }
 
-        public GameNode(List<Stack<int>> stacks, Movement movement, GameNode parent = null, int stackSize = 4)
+        public GameNode(List<int?[]> stacks, Movement movement, GameNode parent = null, int stackSize = 4)
         {
             this.Winnable = true;
             this.Parent = parent;
@@ -48,14 +50,48 @@ namespace BallSortSolutionFinder
             }
         }
 
+        public SortedList<int, int?[]> InitSortedStacks()
+        {
+            var sorted = new SortedList<int, int?[]>();
+            for (int i = 0; i < Stacks.Count; i++)
+            {
+                int index = 0;
+                int offset = 0;
+                for (int j = 0; j < Stacks[i].Length; j++)
+                {
+                    if (Stacks[i][j].HasValue)
+                    {
+                        index += 1000 / (int)Math.Pow(10, j) * ((int)Stacks[i][j] + 1);
+                    } else
+                    {
+                        offset++;
+                    }
+                }
+                if (index > 0)
+                {
+                    index /= (int)Math.Pow(10, offset);
+                } else
+                {
+                    index = -999999 - i;
+                }
+
+                bool succeed = sorted.TryAdd(index, Stacks[i]);
+                while (!succeed)
+                {
+                    index -= 10000;
+                    succeed = sorted.TryAdd(index, Stacks[i]);
+                }
+            }
+            return sorted;
+        }
+
         public void MakeMove()
         {
             //Console.WriteLine("Stack before");
             //Solver.ShowGame(this);
 
-            int pickedNumber = Stacks[Movement.From].Pop();
+            int? pickedNumber = Stacks[Movement.From].Pop();
             Stacks[Movement.To].Push(pickedNumber);
-
             //Console.WriteLine("Stack after");
             //Solver.ShowGame(this);
         }
@@ -87,8 +123,10 @@ namespace BallSortSolutionFinder
             List<Movement> moves = new List<Movement>();
             for (int i = 0; i < Stacks.Count; i++)
             {
+                if (Stacks[i].IsCompleted(StackSize)) continue;
                 for (int j = 0; j < Stacks.Count; j++)
                 {
+                    if (Stacks[j].IsCompleted(StackSize)) continue;
                     if (i != j && (i != Movement.To || j != Movement.From))
                     {
                         Movement move = new Movement(i, j);
@@ -103,11 +141,7 @@ namespace BallSortSolutionFinder
 
         public GameNode GenerateChildNode(Movement move)
         {
-            List<Stack<int>> cloneStack = new List<Stack<int>>();
-            for (int i = 0; i < Stacks.Count; i++)
-            {
-                cloneStack.Add(Stacks[i].Clone());
-            }
+            List<int?[]> cloneStack = Stacks.CloneList();
 
             var newNode = new GameNode(cloneStack, move, this);
 
@@ -117,7 +151,7 @@ namespace BallSortSolutionFinder
                 move.MoveCount++;
                 newNode.MoveCount++;
             }
-
+            newNode.SortedStacks = newNode.InitSortedStacks();
             return newNode;
         }
 
@@ -125,36 +159,16 @@ namespace BallSortSolutionFinder
         {
             if (other == null) return -1;
 
-            var stackComparer = new IntStackCompare();
-            var copyThis = (GameNode)this.Clone();
-            var copyOther = (GameNode)other.Clone();
+            var stackComparer = IntStackCompare.instance;
 
-            copyThis.Stacks.Sort(stackComparer);
-            copyOther.Stacks.Sort(stackComparer);
-
-            for (int i = 0; i < copyThis.Stacks.Count; i++)
+            for (int i = 0; i < this.SortedStacks.Count; i++)
             {
-                if (stackComparer.Compare(copyThis.Stacks[i], copyOther.Stacks[i]) != 0)
+                if (stackComparer.Compare(this.SortedStacks.Values[i], other.SortedStacks.Values[i]) != 0)
                 {
                     return -1;
                 }
             }
             return 0;
-        }
-
-        public object Clone()
-        {
-            GameNode cloneState = new GameNode
-            {
-                Stacks = new List<Stack<int>>()
-            };
-
-            for (int i = 0; i < this.Stacks.Count; i++)
-            {
-                cloneState.Stacks.Add(this.Stacks[i].Clone());
-            }
-
-            return cloneState;
         }
 
         public bool Equals([AllowNull] GameNode x, [AllowNull] GameNode y)
@@ -175,12 +189,12 @@ namespace BallSortSolutionFinder
         public int GetScoreWithNoMoveCountPenalty()
         {
             double score = 0;
-            Stack<int> temp;
-            int nextItem, lastItem;
+            int? lastItem;
             
             for (int i = 0; i < Stacks.Count; i++)
             {
-                if (Stacks[i].Count == 0)
+                int stackCount = Stacks[i].CountStack();
+                if (stackCount == 0)
                 {
                     score += 40;
                 } else if (Stacks[i].IsCompleted(StackSize))
@@ -190,19 +204,18 @@ namespace BallSortSolutionFinder
                 else
                 {
                     double count = 1;
-                    temp = Stacks[i].Clone();
-                    lastItem = temp.Pop();
-                    while (temp.Count > 0)
+                    lastItem = Stacks[i][stackCount - 1];
+
+                    for (int j = stackCount - 2; j >= 0; j--)
                     {
-                        nextItem = temp.Pop();
-                        if (lastItem == nextItem)
+                        if (lastItem == Stacks[i][j])
                         {
                             count++;
                         }
                         else
                         {
                             score += Math.Pow(3, count);
-                            lastItem = nextItem;
+                            lastItem = Stacks[i][j];
                             count = 1;
                         }
                     }
@@ -215,46 +228,6 @@ namespace BallSortSolutionFinder
         public int GetScoreWithBigMoveCountPenalty()
         {
             return GetScoreWithNoMoveCountPenalty() - Movement.MoveCount * 1000;
-        }
-        /// <summary>
-        /// This Method came from Antoun Wardy https://github.com/AntounWagdy/Ball-Sort-Puzzle-Solver/blob/master/Ball-Sort-Puzzle-Solver/Game.cpp
-        /// </summary>
-        /// <returns>int</returns>
-        public int GetScoreOriginal()
-        {
-            double score = 0;
-            Stack<int> temp;
-            int nextItem, lastItem;
-
-            for (int i = 0; i < Stacks.Count; i++)
-            {
-                if (Stacks[i].Count == 0)
-                {
-                    score += 10;
-                }
-                else
-                {
-                    double count = 1;
-                    temp = Stacks[i].Clone();
-                    lastItem = temp.Pop();
-                    while (temp.Count > 0)
-                    {
-                        nextItem = temp.Pop();
-                        if (lastItem == nextItem)
-                        {
-                            count++;
-                        }
-                        else
-                        {
-                            lastItem = nextItem;
-                            count = 1;
-                        }
-                    }
-                    score += 5; 
-                    //score += Math.Pow(3, count);
-                }
-            }
-            return (int)score;
         }
     }
 }

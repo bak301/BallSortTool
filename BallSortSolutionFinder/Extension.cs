@@ -7,36 +7,58 @@ namespace BallSortSolutionFinder
 {
     public static class Extension
     {
-        public static Stack<int> Clone(this Stack<int> stack)
+        public static List<int?[]> CloneList(this List<int?[]> list)
         {
-            return new Stack<int>(new Stack<int>(stack));
+            List<int?[]> cloneStack = new List<int?[]>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                cloneStack.Add(list[i].CloneArray());
+            }
+            return cloneStack;
+        }
+        public static int?[] CloneArray(this int?[] stack)
+        {
+            int?[] newArray = new int?[stack.Length];
+            for (int i = 0; i < stack.Length; i++)
+            {
+                if (stack[i].HasValue)
+                {
+                    newArray[i] = stack[i];
+                } else
+                {
+                    break;
+                }
+            }
+            return newArray;
         }
 
-        public static bool IsSingleType(this Stack<int> stack)
+        public static bool IsSingleType(this int?[] stack)
         {
-            if (stack.Count > 0)
+            int stackCount = stack.CountStack();
+            if (stackCount > 1)
             {
-                var clone = stack.Clone();
-                int reference = clone.Pop();
-                while (clone.Count > 0)
+                for (int i = 1; i < stackCount; i++)
                 {
-                    if (clone.Pop() != reference) return false;
+                    if (stack[i] != stack[0]) return false;
                 }
                 return true;
-            } else
+            } else if (stackCount == 1)
+            {
+                return true;
+            }
+            else
             {
                 return false;
             }
         }
 
-        public static bool IsCompleted(this Stack<int> stack, int stack_size)
+        public static bool IsCompleted(this int?[] stack, int stack_size)
         {
-            List<int> numbers = stack.ToList();
-            if (numbers.Count == stack_size)
+            if (stack.CountStack() == stack_size)
             {
                 for (int i = 0; i < stack_size - 1; i++)
                 {
-                    if (numbers[i] != numbers[i + 1]) return false;
+                    if (stack[i] != stack[i + 1]) return false;
                 }
 
                 return true; // all elements are equal to eachother
@@ -44,6 +66,57 @@ namespace BallSortSolutionFinder
             else
             {
                 return false;
+            }
+        }
+
+        public static int CountStack(this int?[] stack)
+        {
+            int counter = 0;
+            for (int i = 0; i < stack.Length; i++)
+            {
+                if (!stack[i].HasValue)
+                {
+                    return counter;
+                } else
+                {
+                    counter++;
+                }
+            }
+            return counter;
+        }
+
+        public static int? Peek(this int?[] stack)
+        {
+            for (int i = stack.Length - 1; i >= 0 ; i--)
+            {
+                if (stack[i].HasValue) return stack[i];
+            }
+            return null;
+        }
+
+        public static int? Pop(this int?[] stack)
+        {
+            for (int i = stack.Length - 1; i >= 0; i--)
+            {
+                if (stack[i].HasValue)
+                {
+                    int? result = stack[i];
+                    stack[i] = null;
+                    return result;
+                }
+            }
+            return null;
+        }
+
+        public static void Push(this int?[] stack, int? value)
+        {
+            for (int i = 0; i < stack.Length; i++)
+            {
+                if (!stack[i].HasValue)
+                {
+                    stack[i] = value;
+                    break;
+                }
             }
         }
     }

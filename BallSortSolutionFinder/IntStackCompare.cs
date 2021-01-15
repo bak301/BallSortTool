@@ -6,30 +6,28 @@ using System.Text;
 
 namespace BallSortSolutionFinder
 {
-    class IntStackCompare : IComparer<Stack<int>>
+    class IntStackCompare : IComparer<int?[]>
     {
         public static IntStackCompare instance = new IntStackCompare();
 
-        public int Compare([AllowNull] Stack<int> x, [AllowNull] Stack<int> y)
+        public int Compare([AllowNull] int?[] x, [AllowNull] int?[] y)
         {
-            if (x.Count == y.Count)
+            int xCount = x.CountStack();
+            int yCount = y.CountStack();
+            if (xCount == yCount)
             {
-
-                var xList = x.ToArray();
-                var yList = y.ToArray();
-
-                for (int i = 0; i < xList.Length; i++)
+                for (int i = 0; i < xCount; i++)
                 {
-                    if (xList[i] != yList[i])
+                    if (x[i] != y[i])
                     {
-                        return xList[i] - yList[i];
+                        return (int)(x[i] - y[i]);
                     }
                 }
                 return 0;
             }
             else
             {
-                return x.Count - y.Count;
+                return xCount - yCount;
             }
         }
     }
