@@ -21,7 +21,8 @@ namespace BallSortSolutionFinder
         public long FirstSolutionTime { get; set; }
         public int TotalNodeTraversed { get; set; }
 
-        private SortedSet<GameNode> visited;
+        //private SortedSet<GameNode> visited;
+        private HashSet<GameNode> visited;
         private Queue<GameNode> stateQueue;
         private int stackWinCount;
         private bool IsFirstSolutionFound;
@@ -135,8 +136,8 @@ namespace BallSortSolutionFinder
                         }
                         else if (newNode.MoveCount < leastMoves - 1)
                         {
-                            var matchedNode = visited.FirstOrDefault(node => node.CompareTo(newNode) == 0);
-                            if (matchedNode != null)
+                            //var matchedNode = visited.FirstOrDefault(node => node.GetHashCode(node) == newNode.GetHashCode(newNode));                         
+                            if (visited.TryGetValue(newNode, out GameNode matchedNode))
                             {
                                 if (matchedNode.MoveCount > newNode.MoveCount)
                                 {
@@ -309,7 +310,7 @@ namespace BallSortSolutionFinder
             ShortestSolution = new Stack<Movement>();
             FirstSolution = new Stack<Movement>();
             stateQueue = new Queue<GameNode>();
-            visited = new SortedSet<GameNode>();
+            visited = new HashSet<GameNode>(new GameNode());
             IsFirstSolutionFound = false;
             TotalNodeTraversed = 0;
 

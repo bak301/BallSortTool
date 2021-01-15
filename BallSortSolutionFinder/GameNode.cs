@@ -55,25 +55,7 @@ namespace BallSortSolutionFinder
             var sorted = new SortedList<int, int?[]>();
             for (int i = 0; i < Stacks.Count; i++)
             {
-                int index = 0;
-                int offset = 0;
-                for (int j = 0; j < Stacks[i].Length; j++)
-                {
-                    if (Stacks[i][j].HasValue)
-                    {
-                        index += 1000 / (int)Math.Pow(10, j) * ((int)Stacks[i][j] + 1);
-                    } else
-                    {
-                        offset++;
-                    }
-                }
-                if (index > 0)
-                {
-                    index /= (int)Math.Pow(10, offset);
-                } else
-                {
-                    index = -99999 - i;
-                }
+                int index = Extension.GetIndex(Stacks[i], i);
 
                 bool succeed = sorted.TryAdd(index, Stacks[i]);
                 while (!succeed)
@@ -178,7 +160,12 @@ namespace BallSortSolutionFinder
 
         public int GetHashCode([DisallowNull] GameNode obj)
         {
-            throw new NotImplementedException();
+            var result = 0;
+            for (int i = 0; i < obj.SortedStacks.Count; i++)
+            {
+                result = HashCode.Combine(result, Extension.GetIndex(obj.SortedStacks.Values[i], i));
+            }
+            return result;
         }
 
 

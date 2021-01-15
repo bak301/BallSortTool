@@ -119,5 +119,42 @@ namespace BallSortSolutionFinder
                 }
             }
         }
+
+        public static int GetIndex(this int?[] stack, int i)
+        {
+            int index = 0;
+            int offset = 0;
+            for (int j = 0; j < stack.Length; j++)
+            {
+                if (stack[j].HasValue)
+                {
+                    index += 1000 / Pow(10,j) * (stack[j].Value + 1);
+                }
+                else
+                {
+                    offset++;
+                }
+            }
+            if (index > 0)
+            {
+                index /= Pow(10, offset);
+            }
+            else
+            {
+                index = -99999 - i;
+            }
+            return index;
+        }
+
+        public static int Pow(int x, int y)
+        {
+            int result = 1;
+            while (y > 0)
+            {
+                result *= x;
+                y--;
+            }
+            return result;
+        }
     }
 }
