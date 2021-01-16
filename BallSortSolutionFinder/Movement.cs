@@ -13,17 +13,14 @@ namespace BallSortSolutionFinder
 
         public int MoveCount { get; set; }
 
-        internal int Score { get; set; }
-
         private readonly int StackSize;
 
-        public Movement(int from, int to, int stackSize = 4)
+        public Movement(int from, int to, int stackSize)
         {
             From = from;
             To = to;
             StackSize = stackSize;
             MoveCount = 0;
-            Score = 0;
         }
 
         public bool IsValidAndGood(List<int?[]> state)
@@ -36,7 +33,7 @@ namespace BallSortSolutionFinder
 
             // Valid check
             bool IsFromStackEmpty = fromStackCount == 0;
-            bool IsToStackFull = toStackCount == 4;
+            bool IsToStackFull = toStackCount == StackSize;
             bool IsToStackEmpty = toStackCount == 0;
             bool IsItemMatched;
 

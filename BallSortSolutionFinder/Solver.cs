@@ -10,7 +10,7 @@ namespace BallSortSolutionFinder
     public class Solver
     {
 
-        private const int STACK_SIZE = 4;
+        private int stackSize;
         public List<int?[]> Stacks { get; set; }
         public float TimeLimit { get; set; }
         public float TimeFinished { get; set; }
@@ -28,28 +28,20 @@ namespace BallSortSolutionFinder
         private bool IsFirstSolutionFound;
         Stopwatch sw;
 
-        public Solver()
-        {     
-            TimeLimit = float.MaxValue;
-        }
-
-        public Solver(float timeLimit)
+        public Solver(int stackSize, float timeLimit = float.MaxValue)
         {
+            this.stackSize = stackSize;
             TimeLimit = timeLimit;
         }
 
         public void FindShortestSolutionDFS(Level level)
         {
             InitVariables(level);
-            List<GameNode> winNodes = SolveWithDFS(AddToWinNodes);
+            SortedList<int, GameNode> winNodes = SolveWithDFS(AddToWinNodes);
             if (winNodes.Count > 0)
             {
                 level.Solvable = true;
-                winNodes.Sort((node1,node2) =>
-                {
-                    return GetSolution(node1).Sum(GetMoveCount) - GetSolution(node2).Sum(GetMoveCount);
-                });
-                ShortestSolution = GetSolution(winNodes[0]);
+                ShortestSolution = GetSolution(winNodes.Values[0]);
             }
             else
             {
@@ -60,25 +52,21 @@ namespace BallSortSolutionFinder
         public void FindFirstSolution(Level level)
         {
             InitVariables(level);
-            List<GameNode> winNodes = SolveWithDFS(ReturnFirstWinNode);
+            SortedList<int, GameNode> winNodes = SolveWithDFS(ReturnFirstWinNode);
             if (Solved)
             {
-                FirstSolution = GetSolution(winNodes[0]);
+                FirstSolution = GetSolution(winNodes.Values[0]);
             }
         }
 
-        public void FindShortestSolution(Level level)
+        public void FindShortestSolutionBFS(Level level)
         {
             InitVariables(level);
             var winNodes = SolveWithBFS();
             if (winNodes.Count > 0)
             {
                 level.Solvable = true;
-                winNodes.Sort((node1, node2) =>
-                {
-                    return GetSolution(node1).Sum(GetMoveCount) - GetSolution(node2).Sum(GetMoveCount);
-                });
-                ShortestSolution = GetSolution(winNodes[0]);
+                ShortestSolution = GetSolution(winNodes.Values[0]);
             }
             else
             {
@@ -102,10 +90,10 @@ namespace BallSortSolutionFinder
             }
         }
 
-        private List<GameNode> SolveWithBFS()
+        private SortedList<int, GameNode> SolveWithBFS()
         {
-            List<GameNode> winNodes = new List<GameNode>();
-            GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount+1));
+            SortedList<int, GameNode> winNodes = new SortedList<int, GameNode>();
+            GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount+1, stackSize));
             stateQueue.Enqueue(root);
             IEqualityComparer<GameNode> nodeComparer = root;
             int leastMoves = Int32.MaxValue;
@@ -132,11 +120,10 @@ namespace BallSortSolutionFinder
                             if (leastMoves > newNode.MoveCount)
                                 leastMoves = newNode.MoveCount;
 
-                            winNodes.Add(newNode);
+                            winNodes.TryAdd(newNode.MoveCount ,newNode);
                         }
                         else if (newNode.MoveCount < leastMoves - 1)
-                        {
-                            //var matchedNode = visited.FirstOrDefault(node => node.GetHashCode(node) == newNode.GetHashCode(newNode));                         
+                        {                        
                             if (visited.TryGetValue(newNode, out GameNode matchedNode))
                             {
                                 if (matchedNode.MoveCount > newNode.MoveCount)
@@ -168,12 +155,12 @@ namespace BallSortSolutionFinder
             return winNodes;
         }
 
-        private List<GameNode> SolveWithDFS(Action<List<GameNode>, GameNode> OnWinNodeFound)
+        private SortedList<int, GameNode> SolveWithDFS(Action<SortedList<int, GameNode>, GameNode> OnWinNodeFound)
         {
-            GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount + 1));
-            root.SortedStacks = root.InitSortedStacks();
+            GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount + 1, stackSize));
+            root.SortedStacks = root.SortStacks();
             GameNode currentNode = root;
-            List<GameNode> winNodes = new List<GameNode>();
+            SortedList<int, GameNode> winNodes = new SortedList<int, GameNode>();
             int leastMoves = Int32.MaxValue;
 
             sw = Stopwatch.StartNew();
@@ -221,9 +208,8 @@ namespace BallSortSolutionFinder
                         OnWinNodeFound.Invoke(winNodes, newNode);
                     } else if (newNode.MoveCount < leastMoves - 1)
                     {
-                        try
+                        if (visited.TryGetValue(newNode, out GameNode matchedNode))
                         {
-                            var matchedNode = visited.First(node => node.CompareTo(newNode) == 0);
                             if (matchedNode.MoveCount > newNode.MoveCount)
                             {
                                 visited.Remove(matchedNode);
@@ -231,13 +217,11 @@ namespace BallSortSolutionFinder
                                 if (matchedNode.Parent != null)
                                 {
                                     matchedNode.Parent.Childs.Remove(matchedNode);
-                                    //matchedNode.Parent = null;
                                 }
                                 currentNode.Childs.Add(newNode);
                                 visited.Add(newNode);
                             }
-                        }
-                        catch (InvalidOperationException) // can't found new node in Visited
+                        } else
                         {
                             currentNode.Childs.Add(newNode);
                             visited.Add(newNode);
@@ -250,18 +234,18 @@ namespace BallSortSolutionFinder
             return winNodes;
         }
 
-        private void AddToWinNodes(List<GameNode> winNodes, GameNode newNode)
+        private void AddToWinNodes(SortedList<int, GameNode> winNodes, GameNode newNode)
         {
-            winNodes.Add(newNode);
+            winNodes.TryAdd(newNode.MoveCount, newNode);
             if (IsFirstSolutionFound == false)
             {
                 ShowFirstSolution(newNode);
             } 
         }
 
-        private void ReturnFirstWinNode(List<GameNode> winNodes, GameNode newNode)
+        private void ReturnFirstWinNode(SortedList<int, GameNode> winNodes, GameNode newNode)
         {
-            winNodes.Add(newNode);
+            winNodes.TryAdd(newNode.MoveCount, newNode);
             Solved = true;
         }
 
@@ -285,7 +269,7 @@ namespace BallSortSolutionFinder
             Console.WriteLine();
             Console.WriteLine($"{currentState.Movement.From}->{currentState.Movement.To}");
 
-            for (int i = STACK_SIZE-1; i >= 0; i--)
+            for (int i = currentState.StackSize - 1; i >= 0; i--)
             {
                 for (int j = 0; j < currentState.Stacks.Count; j++)
                 {
@@ -314,12 +298,12 @@ namespace BallSortSolutionFinder
             IsFirstSolutionFound = false;
             TotalNodeTraversed = 0;
 
-            for (int i = 0; i < sequence.Length / STACK_SIZE; i++)
+            for (int i = 0; i < sequence.Length / stackSize; i++)
             {
-                int?[]stack = new int?[STACK_SIZE];
-                for (int j = 0; j < STACK_SIZE; j++)
+                int?[]stack = new int?[stackSize];
+                for (int j = 0; j < stackSize; j++)
                 {
-                    stack[j] = sequence[STACK_SIZE * i + j];
+                    stack[j] = sequence[stackSize * i + j];
                 }
 
                 Stacks.Add(stack);
@@ -327,18 +311,13 @@ namespace BallSortSolutionFinder
 
             stackWinCount = Stacks.Count;
 
-            Stacks.Add(new int?[STACK_SIZE]);
-            Stacks.Add(new int?[STACK_SIZE]);  
+            Stacks.Add(new int?[stackSize]);
+            Stacks.Add(new int?[stackSize]);  
         }
 
         public List<Movement> GetSolutionFormatted(Stack<Movement> solution)
         {
             return solution.ToList();
-        }
-
-        private int GetMoveCount(Movement move)
-        {
-            return move.MoveCount;
         }
     }
 }

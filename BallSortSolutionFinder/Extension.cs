@@ -16,7 +16,7 @@ namespace BallSortSolutionFinder
             }
             return cloneStack;
         }
-        public static int?[] CloneArray(this int?[] stack)
+        private static int?[] CloneArray(this int?[] stack)
         {
             int?[] newArray = new int?[stack.Length];
             for (int i = 0; i < stack.Length; i++)

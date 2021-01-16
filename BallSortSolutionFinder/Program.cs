@@ -16,11 +16,15 @@ namespace BallSortSolutionFinder
             string path = @".\";
             string type = "shortest";
             bool IsExport = false;
+            int stackSize = 4;
 
             for (int i = 0; i < args.Length; i++)
             {
                 switch (args[i])
                 {
+                    case "-stackSize":
+                        stackSize = int.Parse(args[i + 1]);
+                        break;
                     case "-path":
                         path = args[i + 1];
                         break;
@@ -43,13 +47,13 @@ namespace BallSortSolutionFinder
                 level = new Level(json.numStacks - 2, json.bubbleTypes);
             }
 
-            Console.WriteLine("Move count: " + Solve(level, type, IsExport));
+            Console.WriteLine("Move count: " + Solve(level, stackSize, type, IsExport));
         }
 
-        public static int Solve(Level level, string type, bool IsExport)
+        public static int Solve(Level level, int stackSize, string type, bool IsExport)
         {
             Console.WriteLine();
-            Solver solver = new Solver();
+            Solver solver = new Solver(stackSize);
 
             Stack<Movement> outputSolution;
 
@@ -64,7 +68,7 @@ namespace BallSortSolutionFinder
                     outputSolution = solver.ShortestSolution;
                     break;
                 case "shortestBFS":
-                    solver.FindShortestSolution(level);
+                    solver.FindShortestSolutionBFS(level);
                     outputSolution = solver.ShortestSolution;
                     break;
                 default:

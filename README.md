@@ -1,7 +1,7 @@
 A tool to generate playable Ball Sort Puzzle level, with solution.
 
 Example command:
-.\BallSortGenerator.exe -levelCount 5 -levelOffset 0 -stackCount 10 -timeLimit 1 -solutionType first -path \levels
+.\BallSortGenerator.exe -levelCount 5 -levelOffset 0 -stackCount 10 -stackSize 4 -timeLimit 1 -solutionType first -path \levels
 
 Launch options :
 
@@ -24,15 +24,22 @@ Launch options :
 		
 		Input type Integer
 
+**-stackSize x** : Total number of item in a stack
+		
+		Default 4
+		
+		Input type Integer
+
 **-time x** : Time (in seconds) limit to generate a single level. If it's fail to generate it will start another.
 		
 		Default 3
 		
 		Input type Float
 
-**-type xxxx** : only take "first" or "shortest" as option. 
+**-type xxxx** : only take the following options: 
 		"first" :  generate level with first solution found.
-		"shortest" generate level with the shortest solution.
+		"shortestBFS": generate level with the shortest solution using BFS to solve.
+		"shortestDFS": same as above but use DFS ( much slower )
 		
 		Default first
 		

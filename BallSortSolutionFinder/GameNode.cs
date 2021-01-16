@@ -50,7 +50,7 @@ namespace BallSortSolutionFinder
             }
         }
 
-        public SortedList<int, int?[]> InitSortedStacks()
+        public SortedList<int, int?[]> SortStacks()
         {
             var sorted = new SortedList<int, int?[]>();
             for (int i = 0; i < Stacks.Count; i++)
@@ -105,13 +105,13 @@ namespace BallSortSolutionFinder
             List<Movement> moves = new List<Movement>();
             for (int i = 0; i < Stacks.Count; i++)
             {
-                if (Stacks[i].IsCompleted(StackSize)) continue;
+                if (Stacks[i].IsCompleted(StackSize) || Stacks[i].CountStack() == 0) continue;
                 for (int j = 0; j < Stacks.Count; j++)
                 {
-                    if (Stacks[j].IsCompleted(StackSize)) continue;
+                    if (Stacks[j].CountStack() == StackSize) continue;
                     if (i != j && (i != Movement.To || j != Movement.From))
                     {
-                        Movement move = new Movement(i, j);
+                        Movement move = new Movement(i, j, StackSize);
                         if (move.IsValidAndGood(Stacks))
                             moves.Add(move);
                     }
@@ -133,7 +133,7 @@ namespace BallSortSolutionFinder
                 move.MoveCount++;
                 newNode.MoveCount++;
             }
-            newNode.SortedStacks = newNode.InitSortedStacks();
+            newNode.SortedStacks = newNode.SortStacks();
             return newNode;
         }
 

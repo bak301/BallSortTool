@@ -13,13 +13,13 @@ namespace BallSortGenerator
     // Tuple item1 = column index, item 2 = row index
     class Program
     {
-        private const int STACK_SIZE = 4;
         static void Main(string[] args)
         {
             int stackCount = 4;
+            int stackSize = 4;
             int levelCount = 1;
             int levelOffset = 0;
-            float timeLimit = 3;
+            float timeLimit = float.MaxValue;
             string solutionType = "first";
             string path = "";
 
@@ -30,6 +30,9 @@ namespace BallSortGenerator
                     case "-numStack":
                     case "-stackCount":
                         stackCount = int.Parse(args[i + 1]);
+                        break;
+                    case "-stackSize":
+                        stackSize = int.Parse(args[i + 1]);
                         break;
                     case "-levelCount":
                         levelCount = int.Parse(args[i + 1]);
@@ -55,16 +58,13 @@ namespace BallSortGenerator
             }
             Level[] levels = new Level[levelCount];
 
-            //TestPerformanceTree(levels, stackCount);
-            //TestPerformanceIterative(levels, stackCount);
-
             switch (solutionType)
             {
                 case "shortest":
-                    ExportShortestSolution(levels, levelOffset, timeLimit, stackCount, path);
+                    ExportShortestSolution(levels, stackSize, levelOffset, timeLimit, stackCount, path);
                     break;
                 case "first":
-                    ExportFirstSolution(levels, levelOffset, timeLimit, stackCount, path);
+                    ExportFirstSolution(levels, stackSize, levelOffset, timeLimit, stackCount, path);
                     break;
                 default:
                     break;
@@ -85,16 +85,16 @@ namespace BallSortGenerator
             }
         }
 
-        private static void ExportShortestSolution(Level[] levels, int offset, float timeLimit, int stackCount, string path)
+        private static void ExportShortestSolution(Level[] levels, int stackSize, int offset, float timeLimit, int stackCount, string path)
         {
             for (int i = 0; i < levels.Length;)
             {
-                levels[i] = new Level(stackCount, STACK_SIZE);
-                Solver solver = new Solver(timeLimit);
+                levels[i] = new Level(stackCount, stackSize);
+                Solver solver = new Solver(stackSize, timeLimit);
                 Console.WriteLine("*********************** LEVEL " + (i + 1) + " *************************");
                 Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
 
-                solver.FindShortestSolutionDFS(levels[i]);
+                solver.FindShortestSolutionBFS(levels[i]);
                 Console.WriteLine("Solve time: " + solver.TimeFinished);
 
                 var solution = solver.GetSolutionFormatted(solver.ShortestSolution);
@@ -120,12 +120,12 @@ namespace BallSortGenerator
             }
         }
 
-        private static void ExportFirstSolution(Level[] levels, int offset, float timeLimit, int stackCount, string path)
+        private static void ExportFirstSolution(Level[] levels, int stackSize, int offset, float timeLimit, int stackCount, string path)
         {
             for (int i = 0; i < levels.Length;)
             {
-                levels[i] = new Level(stackCount, STACK_SIZE);
-                Solver solver = new Solver(timeLimit);
+                levels[i] = new Level(stackCount, stackSize);
+                Solver solver = new Solver(stackSize, timeLimit);
                 Console.WriteLine("*********************** LEVEL " + (i + 1) + " *************************");
                 Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
 
@@ -150,30 +150,6 @@ namespace BallSortGenerator
                 }
                 Console.WriteLine();
                 Console.WriteLine("Total node traversed: " + solver.TotalNodeTraversed);
-            }
-        }
-
-        static void TestPerformanceTree(Level[] levels, int stackCount)
-        {
-            var sw = Stopwatch.StartNew();
-            for (int i = 0; i < levels.Length; i++)
-            {
-                levels[i] = new Level(stackCount, STACK_SIZE);
-                Solver solver = new Solver();
-                solver.FindShortestSolutionDFS(levels[i]);
-            }
-            Console.WriteLine(sw.ElapsedMilliseconds);
-            
-        }
-
-        static void TestPerformanceIterative(Level[] levels, int stackCount)
-        {
-            for (int i = 0; i < levels.Length; i++)
-            {
-                levels[i] = new Level(stackCount, STACK_SIZE);
-                Solver solver = new Solver();
-                solver.FindShortestSolution(levels[i]);
-                Console.WriteLine("Time spent : " + solver.TimeFinished / 1000f + " seconds");
             }
         }
 
