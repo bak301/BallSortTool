@@ -125,7 +125,7 @@ namespace BallSortSolutionFinder
         {
             List<int?[]> cloneStack = Stacks.CloneList();
 
-            var newNode = new GameNode(cloneStack, move, this);
+            var newNode = new GameNode(cloneStack, move, this, this.StackSize);
 
             while (move.IsValidAndGood(newNode.Stacks)) // multiple same move
             {

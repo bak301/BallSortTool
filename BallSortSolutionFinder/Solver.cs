@@ -93,7 +93,7 @@ namespace BallSortSolutionFinder
         private SortedList<int, GameNode> SolveWithBFS()
         {
             SortedList<int, GameNode> winNodes = new SortedList<int, GameNode>();
-            GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount+1, stackSize));
+            GameNode root = new GameNode(Stacks, new Movement(stackWinCount, stackWinCount+1, stackSize), null, stackSize);
             stateQueue.Enqueue(root);
             IEqualityComparer<GameNode> nodeComparer = root;
             int leastMoves = Int32.MaxValue;
