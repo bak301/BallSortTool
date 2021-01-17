@@ -90,11 +90,12 @@ namespace BallSortGenerator
             for (int i = 0; i < levels.Length;)
             {
                 levels[i] = new Level(stackCount, stackSize);
-                Solver solver = new Solver(stackSize, timeLimit);
+                Solver solver = new Solver(timeLimit);
+                solver.InitVariables(levels[i], stackSize);
                 Console.WriteLine("*********************** LEVEL " + (i + 1) + " *************************");
                 Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
 
-                solver.FindShortestSolutionBFS(levels[i]);
+                solver.FindShortestSolutionBFS();
                 Console.WriteLine("Solve time: " + solver.TimeFinished);
 
                 var solution = solver.GetSolutionFormatted(solver.ShortestSolution);
@@ -125,11 +126,12 @@ namespace BallSortGenerator
             for (int i = 0; i < levels.Length;)
             {
                 levels[i] = new Level(stackCount, stackSize);
-                Solver solver = new Solver(stackSize, timeLimit);
+                Solver solver = new Solver(timeLimit);
+                solver.InitVariables(levels[i], stackSize);
                 Console.WriteLine("*********************** LEVEL " + (i + 1) + " *************************");
                 Console.WriteLine($"Start solving {string.Join(',', levels[i].Sequence)} ...");
 
-                solver.FindFirstSolution(levels[i]);
+                solver.FindFirstSolution();
                 Console.WriteLine("Solve time: " + solver.TimeFinished);
 
                 var solution = solver.GetSolutionFormatted(solver.FirstSolution);

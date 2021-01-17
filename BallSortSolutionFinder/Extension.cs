@@ -9,14 +9,14 @@ namespace BallSortSolutionFinder
     {
         public static List<int?[]> CloneList(this List<int?[]> list)
         {
-            List<int?[]> cloneStack = new List<int?[]>();
+            List<int?[]> cloneStack = new List<int?[]>(list.Count);
             for (int i = 0; i < list.Count; i++)
             {
                 cloneStack.Add(list[i].CloneArray());
             }
             return cloneStack;
         }
-        private static int?[] CloneArray(this int?[] stack)
+        public static int?[] CloneArray(this int?[] stack)
         {
             int?[] newArray = new int?[stack.Length];
             for (int i = 0; i < stack.Length; i++)
@@ -52,11 +52,11 @@ namespace BallSortSolutionFinder
             }
         }
 
-        public static bool IsCompleted(this int?[] stack, int stack_size)
+        public static bool IsCompleted(this int?[] stack)
         {
-            if (stack.CountStack() == stack_size)
+            if (stack.CountStack() == stack.Length)
             {
-                for (int i = 0; i < stack_size - 1; i++)
+                for (int i = 0; i < stack.Length - 1; i++)
                 {
                     if (stack[i] != stack[i + 1]) return false;
                 }
@@ -120,41 +120,20 @@ namespace BallSortSolutionFinder
             }
         }
 
-        public static int GetIndex(this int?[] stack, int i)
+        public static long GetIndex(this int?[] stack)
         {
-            int index = 0;
-            int offset = 0;
+            long baseIndex = 0 ; // 12,11, 10, 11, 11 
             for (int j = 0; j < stack.Length; j++)
             {
                 if (stack[j].HasValue)
                 {
-                    index += 1000 / Pow(10,j) * (stack[j].Value + 1);
-                }
-                else
+                    baseIndex += (long)Math.Pow(100, stack.Length - 1 - j) * (stack[j].Value + 1);
+                } else
                 {
-                    offset++;
+                    break;
                 }
             }
-            if (index > 0)
-            {
-                index /= Pow(10, offset);
-            }
-            else
-            {
-                index = -99999 - i;
-            }
-            return index;
-        }
-
-        public static int Pow(int x, int y)
-        {
-            int result = 1;
-            while (y > 0)
-            {
-                result *= x;
-                y--;
-            }
-            return result;
+            return baseIndex;
         }
     }
 }

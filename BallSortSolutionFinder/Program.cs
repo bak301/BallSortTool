@@ -2,10 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace BallSortSolutionFinder
 {
@@ -52,23 +50,21 @@ namespace BallSortSolutionFinder
 
         public static int Solve(Level level, int stackSize, string type, bool IsExport)
         {
-            Console.WriteLine();
-            Solver solver = new Solver(stackSize);
-
+            
             Stack<Movement> outputSolution;
+            Solver solver = new Solver();
+            solver.InitVariables(level, stackSize);
 
+            Console.WriteLine();
             switch (type)
             {
                 case "first":
-                    solver.FindFirstSolution(level);
+                    solver.FindFirstSolution();
                     outputSolution = solver.FirstSolution;
                     break;
-                case "shortestDFS":
-                    solver.FindShortestSolutionDFS(level);
-                    outputSolution = solver.ShortestSolution;
-                    break;
-                case "shortestBFS":
-                    solver.FindShortestSolutionBFS(level);
+
+                case "shortest":
+                    solver.FindShortestSolutionBFS();
                     outputSolution = solver.ShortestSolution;
                     break;
                 default:

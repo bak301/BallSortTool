@@ -8,59 +8,41 @@ namespace BallSortSolutionFinder
 {
     public class GameNode : IComparable<GameNode>, IEqualityComparer<GameNode>
     {
-
-        public List<int?[]> Stacks { get; set; }
-
-        public SortedList<int, int?[]> SortedStacks;
-        public Movement Movement { get; set; }
-
         public GameNode Parent { get; set; }
 
         public List<GameNode> Childs { get; set; }
 
-        public bool Winnable { get; private set; }
+        public List<int?[]> Stacks { get; set; }
 
-        public int Depth { get; set; }
+        public SortedList<long, int?[]> SortedStacks;
+        public Movement Movement { get; set; }
 
         public int MoveCount { get; set; }
-
-        public int StackSize { get; set; }
 
         public GameNode()
         {
 
         }
 
-        public GameNode(List<int?[]> stacks, Movement movement, GameNode parent = null, int stackSize = 4)
+        public GameNode(List<int?[]> stacks, Movement movement, GameNode parent = null)
         {
-            this.Winnable = true;
             this.Parent = parent;
             this.Stacks = stacks;
             this.Movement = movement;
-            this.StackSize = stackSize;
-
-            if (parent != null)
-            {
-                this.Depth = parent.Depth + 1;
-                this.MoveCount = parent.MoveCount;
-            } else
-            {
-                this.Depth = 1;
-                this.MoveCount = 0;
-            }
+            this.MoveCount = parent != null ? parent.MoveCount : 0;
         }
 
-        public SortedList<int, int?[]> SortStacks()
+        public SortedList<long, int?[]> SortStacks()
         {
-            var sorted = new SortedList<int, int?[]>();
+            var sorted = new SortedList<long, int?[]>(Stacks.Count);
             for (int i = 0; i < Stacks.Count; i++)
             {
-                int index = Extension.GetIndex(Stacks[i], i);
+                long index = Extension.GetIndex(Stacks[i]);
 
                 bool succeed = sorted.TryAdd(index, Stacks[i]);
                 while (!succeed)
                 {
-                    index -= 10000;
+                    index -= 1;
                     succeed = sorted.TryAdd(index, Stacks[i]);
                 }
             }
@@ -69,23 +51,8 @@ namespace BallSortSolutionFinder
 
         public void MakeMove()
         {
-            //Console.WriteLine("Stack before");
-            //Solver.ShowGame(this);
-
             int? pickedNumber = Stacks[Movement.From].Pop();
             Stacks[Movement.To].Push(pickedNumber);
-            //Console.WriteLine("Stack after");
-            //Solver.ShowGame(this);
-        }
-
-        public bool HaveChild()
-        {
-            return Childs != null;
-        }
-
-        public void MarkUnwinnable()
-        {
-            this.Winnable = false;
         }
 
         public bool IsWin(int stackWinCount)
@@ -93,7 +60,7 @@ namespace BallSortSolutionFinder
             int counter = 0;
             foreach (var stack in Stacks)
             {
-                if (stack.IsCompleted(StackSize))
+                if (stack.IsCompleted())
                     counter++;
             }
 
@@ -105,14 +72,14 @@ namespace BallSortSolutionFinder
             List<Movement> moves = new List<Movement>();
             for (int i = 0; i < Stacks.Count; i++)
             {
-                if (Stacks[i].IsCompleted(StackSize) || Stacks[i].CountStack() == 0) continue;
+                if (Stacks[i].IsCompleted() || Stacks[i].CountStack() == 0) continue;
                 for (int j = 0; j < Stacks.Count; j++)
                 {
-                    if (Stacks[j].CountStack() == StackSize) continue;
+                    if (Stacks[j].CountStack() == Stacks[j].Length) continue;
                     if (i != j && (i != Movement.To || j != Movement.From))
                     {
-                        Movement move = new Movement(i, j, StackSize);
-                        if (move.IsValidAndGood(Stacks))
+                        Movement move = new Movement(i, j);
+                        if (move.IsValidAndGood(Stacks[i], Stacks[j]))
                             moves.Add(move);
                     }
                 }
@@ -123,16 +90,16 @@ namespace BallSortSolutionFinder
 
         public GameNode GenerateChildNode(Movement move)
         {
-            List<int?[]> cloneStack = Stacks.CloneList();
+            var newNode = new GameNode(Stacks.CloneList(), move, this);
 
-            var newNode = new GameNode(cloneStack, move, this, this.StackSize);
-
-            while (move.IsValidAndGood(newNode.Stacks)) // multiple same move
+            do
             {
                 newNode.MakeMove();
                 move.MoveCount++;
                 newNode.MoveCount++;
             }
+            while (move.IsValidAndGood(newNode.Stacks[move.From], newNode.Stacks[move.To])); // multiple same move
+
             newNode.SortedStacks = newNode.SortStacks();
             return newNode;
         }
@@ -145,27 +112,37 @@ namespace BallSortSolutionFinder
 
             for (int i = 0; i < this.SortedStacks.Count; i++)
             {
-                if (stackComparer.Compare(this.SortedStacks.Values[i], other.SortedStacks.Values[i]) != 0)
+                var result = stackComparer.Compare(this.SortedStacks.Values[i], other.SortedStacks.Values[i]);
+                if ( result != 0)
                 {
-                    return -1;
+                    return result;
                 }
             }
             return 0;
         }
 
-        public bool Equals([AllowNull] GameNode x, [AllowNull] GameNode y)
+        public bool Equals([    AllowNull] GameNode x, [AllowNull] GameNode y)
         {
+#if DEBUG
+            //Console.WriteLine($"Hash code x : {GetHashCode(x)} Hash code y : {GetHashCode(y)}");
+            //Console.WriteLine("----------X------------");
+            //Solver.ShowGame(x, 4);
+            //Console.WriteLine("-----------------------");
+            //Console.WriteLine("----------Y------------");
+            //Solver.ShowGame(y, 4);
+            //Console.WriteLine("-----------------------");
+#endif
             return x.CompareTo(y) == 0;
         }
 
         public int GetHashCode([DisallowNull] GameNode obj)
         {
-            var result = 0;
+            var hashCode = new HashCode();
             for (int i = 0; i < obj.SortedStacks.Count; i++)
             {
-                result = HashCode.Combine(result, Extension.GetIndex(obj.SortedStacks.Values[i], i));
+                hashCode.Add(obj.SortedStacks.Keys[i]);
             }
-            return result;
+            return hashCode.ToHashCode();
         }
 
 
@@ -184,7 +161,7 @@ namespace BallSortSolutionFinder
                 if (stackCount == 0)
                 {
                     score += 40;
-                } else if (Stacks[i].IsCompleted(StackSize))
+                } else if (Stacks[i].IsCompleted())
                 {
                     score += 100;
                 }
