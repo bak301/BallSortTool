@@ -1,7 +1,7 @@
 A tool to generate playable Ball Sort Puzzle level, with solution.
 
 Example command:
-.\BallSortGenerator.exe -levelCount 5 -levelOffset 0 -stackCount 10 -stackSize 4 -timeLimit 1 -solutionType first -path \levels
+.\BallSortGenerator.exe -levelCount 5 -levelOffset 0 -stackCount 10 -stackSize 4 -time 1 -type shortest -path .\levels
 
 Launch options :
 
