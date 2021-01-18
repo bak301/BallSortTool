@@ -38,8 +38,7 @@ Launch options :
 
 **-type xxxx** : only take the following options: 
 		"first" :  generate level with first solution found.
-		"shortestBFS": generate level with the shortest solution using BFS to solve.
-		"shortestDFS": same as above but use DFS ( much slower )
+		"shortest": generate level with the shortest solution using BFS to solve.
 		
 		Default first
 		
